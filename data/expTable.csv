@@ -1,0 +1,261 @@
+ID,Description,PMID,Species,Tissue,ExpType,Perturbation,Effect,Type,foldChangeOnly,platform
+GSE107363,Osteoblasts in Rheumatoid Arthritis ,29137139,Human,Cartilage,Disease,Rheumatoid arthritis,,RNASeq,TRUE,RNASeq
+GSE70667,Osteocyte-like MLO-Y4 cell response to Fluid Flow,26573903,Mouse,Cell line,Culture,Fluid flow,,RNASeq,FALSE,RNASeq
+GSE85761,Human osteoblast-derived extracellular vesicle,28347747,Human,Bone,Tissue,extracellular vesicle,,RNASeq,TRUE,RNASeq
+GSE87608,HDAC inhibition in Heterozygous Runx2 Null Mice,28052439,Mouse,Bone,Gene perturbation Exogenous,Runx2 MS-275,Knockout,RNASeq,FALSE,RNASeq
+GSE89179,CHD1 knockdown in MSC and FOB cell lines,28475736,Human,Cell line,Gene perturbation,CHD1,Knockdown,RNASeq,TRUE,RNASeq
+GSE90890,Cdc73 knockout in osteoblasts,28384511,Mouse,Bone,Gene perturbation,Cdc73,Knockdown,RNASeq,FALSE,RNASeq
+GSE97118,Differentiation of Ezh2 deficient immature mouse chondrocytes,29280310,Mouse,Cartilage,Gene perturbation,Ezh2,Knockout,RNASeq,TRUE,RNASeq
+22659600,Human hip osteoarthritis cartilage,22659600,Human,Cartilage,Disease,Osteoarthritis,,Microarray,FALSE,Illumina
+24361742,Human cartilage osteoarthritic damage,24361742,Human,Cartilage,Disease,Osteoarthritis,,Microarray,FALSE,1C-Agilent
+GSE72258,Rheumatoid arthritis synovial fibroblast (RASF) after C5orf30 and HDAC1 knockdown,26316022,Human,Synovium,Gene perturbation,C5orf30 HDAC1,Knockdown,Microarray,FALSE,Illumina
+GSE57740,Chadl knockdown in ATDC cells,25451920,Mouse,Cell line,Gene perturbation,Chadl,Knockdown,Microarray,TRUE,Affy
+GSE69531,in vitro chondrogenesis of human synovial stem cells on plastic and ECM,25861949,Human,Synovium,Culture Development,Plastic and ECM,,Microarray,TRUE,Affy-ST
+GSE52992,hTNFtg and hTNFtg;Rsk2-/y primary synovial fibroblasts.,25414238,Mouse,Synovium,Gene perturbation,Rsk2,Knockout,Microarray,FALSE,Affy
+GSE58203,Stimulation of RA synovial fibroblasts with IL1 or PDGF-D,24989895,Human,Synovium,Exogenous,IL1 or PDGF-D,,Microarray,FALSE,Affy
+GSE59642,Synovial fluid and bone marrow mesenchymal stem cells,,Human,Synovium,Tissue,Synovial fluid and bone marrow mesenchymal stem cells,,Microarray,TRUE,1C-Agilent
+GSE64922,Placental growth factor knockdown in rheumatoid synoviocytes,25694608,Human,Synovium,Gene perturbation,PIGF,Knockdown,Microarray,FALSE,1C-Agilent
+GSE60162,Osteoarthritis synovial fibroblasts transfected with TBX5,25320281,Human,Synovium,Gene perturbation,TBX5,Overexpression,Microarray,TRUE,Affy-ST
+GSE31685,Stimulation of RA synovial fibroblasts with IL1 and/or resveratrol,23137833,Human,Synovium,Exogenous,IL1B and/or resveratrol,,Microarray,FALSE,Affy-ST
+E-MEXP-3890,Synovial macrophages and peripheral blood monocytes from RA patients,23434566,Human,Synovium,Disease,Rheumatoid arthritis,,Microarray,FALSE,Affy
+GSE31980,Human synovial MSC-aggregates and monolayer cultures,22676383,Human,Synovium,Culture,aggregates and monolayer cultures,,Microarray,FALSE,Affy
+GSE17160,Tnfip6 KO and wild-type synovial fibroblasts treated with TNFa/LPS/TSG-6/HA,21566135,Mouse,Synovium,Gene perturbation Exogenous,TNfip6 TNFa/LPS/TSG-6/HA,Knockout,Microarray,TRUE,Affy
+GSE15615,Stimulation of RA synovial fibroblasts with IL1B or TNF,19389237,Human,Synovium,Exogenous,IL1B or TNF,,Microarray,FALSE,Affy
+GSE15083,Synovial fluid mononuclear cells from persistent and extended oligoarticular JIA,20127724,Human,Synovium,Disease,juvenile idiopathic arthritis,,Microarray,FALSE,Affy
+GSE22971,MMP-8 wild type and KO mice with or without arthritis,21190566,Mouse,Joint,Disease Gene perturbation,RA MMP8,Knockout,Microarray,FALSE,Affy
+GSE13590,Silencing and overexpression of miR-140,18945805,Mouse,Cell line,Gene perturbation,miR-140,Overexpression Knockdown,Microarray,FALSE,Affy
+GSE108035,Human induced pluripotent stem cells compared to mature chondrocytes,,Human,Cell line,Tissue,hiPSCs mature chondrocytes articular cartilage,,Microarray,FALSE,Affy-ST
+GSE99731,Osteoarthritic Synovial Tissue from a Mouse Model of Early Post-Traumatic OA,29255152,Mouse,Synovium,Disease,Surgical destabilization of medial meniscus,,Microarray,FALSE,1C-Agilent
+GSE21959,Response to hypoxia of normal and rheumatoid arthritis synovial fibroblasts,20848564,Human,Synovium,Culture,Hypoxia,,Microarray,FALSE,1C-Agilent
+GSE24742,Effects of rituximab in synovium from anti-TNF resistant RA patients,21337318,Human,Synovium,Exogenous,rituximab,,Microarray,FALSE,Affy
+GSE27492,Synovial fluid cells from a mouse model of autoantibody-mediated arthritis timecourse,20506316,Mouse,Synovium,Disease,autoantibody-mediated arthritis,,Microarray,FALSE,Affy
+GSE74668,IL-17 induced gene expression in synovial fibroblasts ,26839464,Human,Synovium,Exogenous,IL-17,,Microarray,TRUE,1C-Agilent
+E-GEOD-57723,Modulation of the TNF-induced macrophage response by synovial fibroblasts,25057003,Human,Synovium,Exogenous,TNF,,RNASeq,TRUE,RNASeq
+E-GEOD-83930,miR-17 transfected Rheumatoid arthritis Synovial Fibroblasts,27534557,Human,Synovium,Gene perturbation,MiR-17,Overexpression,RNASeq,TRUE,RNASeq
+GSE107592,Mouse adult and embryonic cartilage,,Mouse,Cartilage,Development,adult and embryonic cartilage,,RNASeq,FALSE,RNASeq
+GSE92641,Effect of Uhrf1 knockout in chondrocyte differentiation,29180567,Mouse,Cartilage,Gene perturbation,Uhrf1,Knockout,RNASeq,FALSE,RNASeq
+GSE100268,HPIP KO Cartilage,,Human,Cartilage,Gene perturbation,HPIP,Knockout,RNASeq,TRUE,RNASeq
+GSE107849,RORB KO in MC3T3-E1 cells,,Mouse,Cell line,Gene perturbation,RORB,Knockout,RNASeq,FALSE,RNASeq
+E-GEOD-10024,3D cultured chondrocytes treated RA/control synovial fibroblast media,18205922,Human,Cartilage,Exogenous,Rheumatoid arthritis supernatant,,Microarray,TRUE,Affy
+E-GEOD-12860,Human chondrocytes antirheumatic drug response,19192274,Human,Cartilage,Exogenous,Antirheumatic drugs,,Microarray,TRUE,Affy
+E-GEOD-14359,Osteosarcoma and non-neoplastic osteoblast cells,21166698,Human,Bone,Tissue,Osteoblast vs osteosarcoma,,Microarray,FALSE,Affy
+E-GEOD-15069,Mouse chondrocytes treated with MEK/ERK pathway inhibitors,20111593,Mouse,Cartilage,Exogenous,MEK/ERK pathway inhibitors,,Microarray,FALSE,Affy
+E-GEOD-15118,PTHR1 (R150C) model of enchondromas in CH10T1/2 cell line,19647223,Mouse,Cell line,Disease Gene perturbation,Pthr1,Overexpression,Microarray,TRUE,Affy
+E-GEOD-16007,MiR-140 knockout chondrocytes,20466812,Mouse,Cartilage,Gene perturbation,miR-140,Knockout,Microarray,TRUE,Affy
+E-GEOD-17473,Mouse embryonic E16.5 temporomandibular joint,19815519,Mouse,Bone,Tissue,Chondyl  fossa,,Microarray,FALSE,Affy
+E-GEOD-18647,Tgfbr2 knockout in embryonic intervertebral disc and vertebrae,20214815,Mouse,Cartilage,Gene perturbation,Tgfbr2,Knockout,Microarray,FALSE,Affy
+E-GEOD-18648,TGF-beta and BMP mediated gene expression in cultured sclerotome,20214815,Mouse,Cartilage,Exogenous,TGF-beta and/or BMP4,,Microarray,FALSE,Affy
+E-GEOD-1919,Human osteoarthritis or rheumatoid arthritis synovium treated with drug regimes,20858714,Human,Synovium,Disease,RA and Osteoarthritis,,Microarray,TRUE,Affy
+E-GEOD-19664,Osteoarthritic chondrocytes and MSCs during chondrogenic differentiation,20883804,Human,Cartilage,Development,Timecourse,,Microarray,TRUE,Affy
+E-GEOD-2154,Chondrocyte differentiation,16135533,Mouse,Embryo,Development,Chondrocyte differentiation,,Microarray,FALSE,Affy
+E-GEOD-26475,Mouse DMM model of OA,22307759,Mouse,Joint,Disease,Surgical destabilization of medial meniscus,,Microarray,FALSE,Affy-ST
+E-GEOD-33567,BMP2 induced C2C12 differentiation,23825702,Mouse,Cell line,Exogenous,BMP2,,Microarray,TRUE,Affy
+E-GEOD-37287,Tgfbr2 KO in growth plate,22814601,Mouse,Cartilage,Gene perturbation,Tgfbr2,Knockout,Microarray,TRUE,1C-Agilent
+E-GEOD-43923,Osteophytic and articular osteoarthritic cartilage,26069671,Human,Cartilage,Disease,Osteoarthritis -  Osteophytic cartilage,,Microarray,FALSE,Affy
+E-GEOD-51812,Chondrocyte subsets during development,24371811,Human,Cartilage,Development,Chondrocyte development,,Microarray,FALSE,Affy
+E-GEOD-51994,Laser captured microdissected articular cartilage zones,25068449,Mouse,Cartilage,Tissue,Superficial/ mid/deep zones,,Microarray,FALSE,Affy
+E-GEOD-54216,Articular and growth plate cartilage zones in 10-day-old rat proximal tibial epiphysis,25068449,Rat,Cartilage,Tissue,Cartilage zones,,Microarray,FALSE,Affy-ST
+E-GEOD-6119,Chondrocytes treated with glucosamine and/or IL-1beta,17109745,Rat,Cartilage,Exogenous,Glucosamine and/or IL1B,,Microarray,FALSE,Affy
+E-GEOD-65077,Erg-010 overexpression in CH310T1/2 cells,26542169,Mouse,Cell line,Gene perturbation,Erg,Overexpression,Microarray,TRUE,Affy
+E-GEOD-68760,Galectin-1 treated osteoarthritic chondrocytes ,26792806,Human,Cartilage,Exogenous,Gal-1,,Microarray,FALSE,Affy
+E-GEOD-8077,Rat model of surgically induced knee osteoarthritis,17530714,Rat,Cartilage,Disease,Surgically induced knee osteoarthritis,,Microarray,FALSE,Affy
+E-GEOD-82107,Osteoarthritis synovial membrane,NA,Human,Synovium,Disease,Osteoarthritis,,Microarray,FALSE,Affy
+E-GEOD-9451,Mesenchymal stem cell differentiation,19228201,Human,Bone,Tissue,Differentiation,,Microarray,FALSE,Affy
+E-MEXP-1244,ATDC5 chondrocyte cell line treated with dexamethasone,18381927,Mouse,Cell line,Exogenous,dexamethasone,,Microarray,TRUE,Affy
+E-MEXP-2019,Human osteoclastic differentiating from dendritic cells and monocytes,19775202,Human,Bone,Development,Osteoclast from monocytes or denricites,,Microarray,FALSE,Affy
+E-MEXP-2276,Thanatophoric dysplasia cartilage,19898608,Human,Cartilage,Disease,Thanatophoric dysplasia,,Microarray,FALSE,Affy
+E-MEXP-2488,nucleus pulposus vs articular cartilage cell types,20722018,Human,Cartilage,Tissue,human nucleus pulposus cartilage,,Microarray,FALSE,Affy
+E-MEXP-3129,Exposure of human articular chondrocytes to hyperosmotic conditions,21640843,Human,Cartilage,Culture,Osmolarity,,Microarray,FALSE,Illumina
+E-MEXP-3474,Human Kashin-beck disease and osteoarthritis cartilage,27053287,Human,Cartilage,Disease,Kashin-beck disease and osteoarthritis,,Microarray,FALSE,2C-Agilent
+E-MTAB-1123,Mineralizing-osteoblast specific androgen receptor knockout,22525354,Mouse,Bone,Gene perturbation,AR,Knockout,Microarray,FALSE,Affy
+E-MTAB-1391,Mineralising primary osteoblast development,23925391,Mouse,Bone,Development,Osteoblast,,Microarray,FALSE,Affy
+E-MTAB-2450,Osteoblasts treated with miR-195 mimic and or rhBMP2 ,25407900,Mouse,Bone,Gene perturbation,miR-195-5p,Overexpression,Microarray,FALSE,1C-Agilent
+E-MTAB-3010,miR450a-5p in osteoblast differentiation,NA,Human,Bone,Gene perturbation,osteoblast differentiation,,Microarray,TRUE,1C-Agilent
+E-MTAB-4152,Osteoblasts co-cultured with human umbilical vein endothelial cells,26754918,Human,Bone,Culture,co-culture with human umbilical vein endothelial cells,,Microarray,FALSE,Affy-ST
+E-MTAB-5023,Sbds knockout osteoblasts,20305640,Mouse,Bone,Gene perturbation,Sbds,Knockout,Microarray,FALSE,Affy
+E-MTAB-5326,Hydrostatic pressure in ATDC5 chondrocyte precursor cells,28813497,Mouse,Cell line,Culture,Hydrostatic pressure,,Microarray,TRUE,1C-Agilent
+GSE100609,Osteoclast precursor cells in osteoporosis,NA,Human,Bone,Disease,Osteoporosis,,Microarray,FALSE,1C-Agilent
+GSE100786,Bone marrow and blood monocytes from patients with RA and OA,NA,Human,Blood,Disease,RA and Osteoarthritis,,Microarray,FALSE,Affy
+GSE102588,Calvaria of 10-day-old 13del-tg transgenic mice displaying bone overgrowth,28973168,Mouse,Bone,Disease Gene perturbation,Col10a1,Knockin,Microarray,FALSE,Affy
+GSE103416,knee cartilage in MIA model of osteoarthritis,29134405,Rat,Cartilage,Disease Exogenous,MIA,,Microarray,FALSE,Affy-ST
+GSE103697,Myeloma cell production of osteolytic cytokines,29233917,Human,Cell line,Exogenous,C-reactive protein,,Microarray,TRUE,Illumina
+GSE104113,Human Chondrocyte age,26955889,Human,Cartilage,Development,Age,,Microarray,TRUE,Affy-ST
+GSE104793,Interleukin-1B effect on primary mouse articular chondrocytes,NA,Mouse,Cartilage,Exogenous,IL1B,,Microarray,FALSE,Affy-ST
+GSE104794,HIF-2A overexpression in primary mouse articular chondrocytes,26903440,Mouse,Cartilage,Exogenous,HIF2A,,Microarray,FALSE,Affy-ST
+GSE104795,SLC39A8 (ZIP8) overexpression in primary mouse articular chondrocytes,26903440,Mouse,Cartilage,Exogenous,SLC39A8,,Microarray,FALSE,Affy-ST
+GSE105139,Mouse model of slipped capital femoral epiphysis (SCFE),29088242,Mouse,Cartilage,Gene perturbation,Ahsg,Knockout,Microarray,FALSE,Affy-ST
+GSE10555,Slc39a13 knockout osteoblasts,18985159,Mouse,Bone,Gene perturbation,Slc39a13,Knockout,Microarray,TRUE,Affy
+GSE10556,Slc39a13 knockout chondrocytes,18985159,Mouse,Cartilage,Gene perturbation,Slc39a13,Knockout,Microarray,FALSE,Affy
+GSE10575,Osteoarthritis chondroprogenitor cells,19341622,Human,Cartilage,Disease,Osteoarthritis,,Microarray,FALSE,Affy
+GSE106631,Galectin-8 treated primary osteoblasts ,29259034,Mouse,Bone,Exogenous,Galactin 8,,Microarray,FALSE,Affy-ST
+GSE13104,p53+/- osteosarcoma,NA,Mouse,Bone,Gene perturbation,p53,Heterozygote,Microarray,TRUE,Affy
+GSE13604,MSCs treated for 8 hours with BMP6,19473525,Human,Bone,Exogenous,BMP6,,Microarray,FALSE,Affy
+GSE13837,TGFb or TNFa treated synovium from rheumatoid arthritis or osteoarthritis,19622164,Human,Synovium,Disease,Osteoarthritis  Rheumatoid arthritis,TNF and TGFB,Microarray,FALSE,Affy
+GSE16464,3D and monolayer cultured chondrocytes,19723327,Human,Cartilage,Disease,Osteoarthritis,3D culture,Microarray,TRUE,Affy
+GSE16749,miR-155 role in osteoclast differentiation,20720163,Mouse,Cell line,Gene perturbation,miR-155,Overexpression,Microarray,TRUE,Affy-ST
+GSE17348,Effects of prostate cancer cells on osteoblasts,19796718,Mouse,Bone,Culture,Prostate cell media,,Microarray,TRUE,Affy
+GSE17563,RANKL induced osteoclastogenesis,12215257,Mouse,Bone,Development,Osteoclast differentiation time course,,Microarray,TRUE,Affy
+GSE17569,Endosteal cell populations,20472830,Mouse,Bone,Tissue,Endosteal cell populations,,Microarray,TRUE,Affy
+GSE17570,Endosteal cell populations,20472830,Mouse,Bone,Tissue,Endosteal cell populations,,Microarray,TRUE,Affy
+GSE18991,Overexpression of Hoxd4 in chondrocytes at E18.5,26069554,Mouse,Cartilage,Gene perturbation,Hoxd4,Overexpression,Microarray,FALSE,Affy
+GSE18992,Overexpression of Hoxc8 in chondrocytes at E18.5,26069554,Mouse,Cartilage,Gene perturbation,Hoxc8,Overexpression,Microarray,FALSE,Affy
+GSE19060,Osteoarthritic meniscus,20109188,Human,Meniscus,Disease,Osteoarthritis,,Microarray,FALSE,Affy
+GSE19299,Rb KO osteoblasts,21085651,Mouse,Bone,Gene perturbation,Rb,Knockout,Microarray,FALSE,Affy
+GSE19950,Prothrombin - and osteopontin- cells in bone,21195739,Rat,Bone,Tissue, PT- and OPN- cells,,Microarray,FALSE,Affy-ST
+GSE20850,Cultured macrophages and osteoclasts,20368579,Mouse,Bone,Tissue,Macrophages, osteoclasts,Microarray,TRUE,Affy
+GSE21093,Osteoclast Differentiation in Modeled Microgravity,20717918,Mouse,Cell line,Culture,Microgravity,,Microarray,TRUE,1C-Agilent
+GSE21523,Long bones of telomerase deficient mice,21308778,Mouse,Bone,Gene perturbation,TERC,Knockout,Microarray,TRUE,Illumina
+GSE21639,RANKL treatment in RAW 264.7 osteoclast differentiation,20633538,Mouse,Cell line,Exogenous,RANKL,,Microarray,TRUE,Affy
+GSE21710,Insulin response in IGF-1 KO mice,20655471,Mouse,Bone,Gene perturbation,IGF-1 receptor,Knockout,Microarray,TRUE,Affy
+GSE22925,G-CSF treated endothelial/osteoblasts,20516641,Mouse,Bone,Exogenous,G-CSF,,Microarray,FALSE,Affy
+GSE26499,Lineage-committed osteoclast precursors,21898588,Mouse,Bone,Development,Osteoblast precusors,,Microarray,TRUE,Affy-ST
+GSE27372,Pre-osteocytes co-cultured with multiple myeloma cells,22289923,Human,Bone,Culture,Co-culture with melanoma cells,,Microarray,FALSE,Affy
+GSE27390,BMMCs from rheumatoid arthritis (RA) and osteoarthritis ,21679443,Human,Bone,Disease,Osteoarthritis,RA,Microarray,FALSE,Affy
+GSE29106,MVNP Paget’s disease of bone model,NA,Human,Bone,Gene perturbation,Measles Virus Nucleocapsid Protein,Overexpression,Microarray,TRUE,1C-Agilent
+GSE29107,p62P392L Paget’s disease of bone model,NA,Human,Bone,Disease Gene perturbation,Paget’s Disease p62,Overexpression,Microarray,TRUE,1C-Agilent
+GSE29745,Human amnion and chondrosarcoma,22833560,Human,Cartilage,Tissue,Amnion,chondrosarcoma,Microarray,TRUE,1C-Agilent
+GSE30160,RANK IVVY motif invative mutant bone marrow macrophage,NA,Mouse,Bone,Gene perturbation,RANK IVVY Motif,Knockin,Microarray,FALSE,Affy
+GSE30322,Subchondral Bone in Early Experimental Osteoarthritis,22384228,Rat,Bone,Disease,Surgically induced knee osteoarthritis,,Microarray,FALSE,1C-Agilent
+GSE30628,MCDS cartilage model,21935428,Mouse,Cartilage,Gene perturbation,Col10a1,Knockin,Microarray,FALSE,1C-Agilent
+GSE32163,Distal arthrogryposis type 2B mouse model,25340332,Mouse,Bone,Gene perturbation,Tnni2,Knockin,Microarray,FALSE,Affy-ST
+GSE33656,Frzb knockout in joint,22264237,Mouse,Joint,Gene perturbation,Frzb,Knockout,Microarray,TRUE,Affy
+GSE33754,Model of natural OA onset in OA-prone Str/ort mice,22833266,Mouse,Cartilage,Disease,Osteoarthritis,STR/ORT mice,Microarray,FALSE,Affy-ST
+GSE34570,c-Src inhibited osteoblasts,22252554,Mouse,Bone,Exogenous,PP1,c-Src inhibition,Microarray,TRUE,Affy
+GSE35003,Cilia deleted growth plate chondrocytes,23034798,Mouse,Cartilage,Gene perturbation,Ift88fl,Knockout,Microarray,TRUE,Affy
+GSE35466,Bone marrow cultures treated with adiponectin,22374965,Mouse,Bone,Exogenous,Adiponectin,,Microarray,TRUE,Affy
+GSE35546,Kartogenin treated MSCs,22491093,Human,Bone,Exogenous,Kartogenin,,Microarray,TRUE,Affy
+GSE35955,Elderly and middle-aged MSCs,23028809,Human,Bone,Development,MSCs,,Microarray,FALSE,Affy
+GSE35956,Osteoporosis MSCs,23028809,Human,Bone,Disease,Osteoporosis,,Microarray,FALSE,Affy
+GSE35957,Senescent human MSCs,23028809,Human,Bone,Development,Senescence,,Microarray,FALSE,Affy
+GSE35958,Osteoporosis MSCs,23028809,Human,Bone,Disease,Osteoporosis,,Microarray,FALSE,Affy
+GSE36925,Primary osteoblasts treated with/without BMP2,23639677,Mouse,Bone,Exogenous,BMP2,,Microarray,TRUE,1C-Agilent
+GSE37219,NFATc1-deficient osteoclasts,18846253,Mouse,Bone,Gene perturbation,NFATc1,Knockout,Microarray,TRUE,Affy
+GSE37676,Ascorbic Acid (AA) stimulated Mc-3T3-E1 osteoblasts,23050002,Mouse,Bone,Exogenous,Ascorbic Acid,,Microarray,FALSE,Affy
+GSE39340,Synovium from patients with RA  osteoarthritis or ankylosing spondylitis,NA,Human,Synovium,Disease,Rheumatoid arthritis,osteoarthritis or ankylosing spondylitis,Microarray,FALSE,Illumina
+GSE39795,Human cartilage zones,23124445,Human,Cartilage,Tissue,Superficial,middle and deep zones,Microarray,FALSE,Affy-ST
+GSE41038,Ankylosing spondylitis synovium,NA,Human,Synovium,Disease,Ankylosing spondylitis,,Microarray,FALSE,Illumina
+GSE41342,Mouse DMM model of OA,23382930,Mouse,Joint,Disease,Surgical destabilization of medial meniscus,,Microarray,FALSE,Affy
+GSE41992,Peripheral blood CD14+ cells from buffy coat treated with IL3,24369304,Human,Blood,Exogenous,CD14+ cells treated with IL-3,,Microarray,TRUE,Affy
+GSE41997,Estrogen Receptor alpha knockout osteocytes,24333171,Mouse,Bone,Gene perturbation,Esr1,Knockout,Microarray,FALSE,Affy
+GSE42235,Dedifferentiating chondrocytes,23376013,Human,Cartilage,Culture,chondrocyte dedifferentiation,,Microarray,FALSE,Illumina
+GSE42295,Rat model of surgically induced knee osteoarthritis,NA,Rat,Cartilage,Disease,Surgically induced knee osteoarthritis,,Microarray,FALSE,Affy
+GSE43242,Beta-catenin constitutive activation and FoxO1 knockout in osteoblasts,24429522,Mouse,Bone,Gene perturbation,Ctnnb1 FoxO1,Overexpression   Knockout,Microarray,FALSE,Affy
+GSE43663,Over-expression of Prg4 in superficial zone articular chondrocytes,23486780,Mouse,Cartilage,Gene perturbation,Prg4,Overexpression,Microarray,FALSE,Illumina
+GSE43854,MLII osteoblast model,24127423,Mouse,Bone,Gene perturbation,Gnptab,Knockin,Microarray,TRUE,Affy
+GSE45233,Human Injured Meniscus with age and chondrosis,24692131,Human,Meniscus,Disease,Human Injured Meniscus,,Microarray,FALSE,Illumina
+GSE45656,Stages of osteoclast lineage cells,23908115,Mouse,Bone,Development,Stages of osteoclast lineage cells,,Microarray,TRUE,Affy
+GSE45793,ADAMTS5 perturbation in mouse DMM model of OA,23436205,Mouse,Cartilage,Disease Gene perturbation,Osteoarthritis ADAMTS5,Knockin,Microarray,FALSE,2C-Agilent
+GSE46053,MSC cultured with malignant multiple myeloma cells,25268740,Human,Bone,Culture,Co-culture with melanoma cells,,Microarray,FALSE,Affy
+GSE46390,CSF1 treated peritoneal macrophages,24394418,Mouse,Bone,Exogenous,CSF1,,Microarray,TRUE,Affy
+GSE46750,Synovial cells from inflammatory and normal areas of osteoarthritis synovial membrane,24757147,Human,Synovium,Disease,Synovial inflammed vs normal,,Microarray,FALSE,Illumina
+GSE48438,Preosteoblastic lineage cells isolated from leukemic mice,23850243,Mouse,Bone,Gene perturbation,BCR-ABL,Fusion,Microarray,FALSE,Affy-ST
+GSE50549,Histone Deacetylase Inhibition Promotes Osteoblast Maturation,23940046,Mouse,Cell line,Exogenous,Suberoylanilidehydroxamic acid,,Microarray,FALSE,Illumina
+GSE51098,Intermediate and outer interzone of murine embryos at 15.5 days of gestation,24738827,Mouse,Embryo,Tissue,intermediate and outer interzone,,Microarray,FALSE,1C-Agilent
+GSE51588,Subchondral Bone in Osteoarthritis,24229462,Human,Bone,Disease,Osteoarthritis,Bone,Microarray,FALSE,1C-Agilent
+GSE52817,Characterisation of osteoblasts like cell reprogrammed from human fibroblasts,25918395,Human,Bone,Tissue,Cell type,,Microarray,TRUE,Affy-ST
+GSE53857,Mouse DMM model of OA,25545425,Mouse,Cartilage,Disease,Surgical destabilization of medial meniscus,,Microarray,FALSE,Illumina
+GSE53982,Runx2 knockdown in differentiating preosteoblasts,24655370,Mouse,Cell line,Gene perturbation,Runx2,Knockdown,Microarray,FALSE,Affy-ST
+GSE54779,Osteoclast development,25275604,Mouse,Bone,Exogenous,RANKL,,Microarray,FALSE,Affy-ST
+GSE55235,Rheumatoid arthritis  osteoarthritis and control synovial membrane,24690414,Human,Synovium,Disease,Rheumatoid arthritis, Osteoarthritis,Microarray,FALSE,Affy
+GSE55457,Rheumatoid arthritis  osteoarthritis and control synovial membrane,24690414,Human,Synovium,Disease,Rheumatoid arthritis, Osteoarthritis,Microarray,FALSE,Affy
+GSE55584,Rheumatoid arthritis and osteoarthritis synovial membrane,24690414,Human,Synovium,Disease,Rheumatoid arthritis or  Osteoarthritis,,Microarray,FALSE,Affy
+GSE55900,Lrp5 KO in osteoblast,25802278,Mouse,Bone,Gene perturbation,Lrp5,Knockout,Microarray,FALSE,Illumina
+GSE57104,Mouse model of Markedly Enhanced Intramembranous Bone Formation,25704759,Mouse,Bone,Gene perturbation,engineered constitutively active Gs-coupled GPCR,,Microarray,FALSE,Affy-ST
+GSE57218,Human cartilage osteoarthritic damage,25054223,Human,Cartilage,Disease,Macroscopically intact/damaged osteoarthritis/ non-osteoarthritis affected cartilage,,Microarray,FALSE,Illumina
+GSE59387,Dnmt3a knockout osteoclast,25706873,Mouse,Bone,Gene perturbation,Dnmt3a,Knockout,Microarray,TRUE,1C-Agilent
+GSE60401,SXR overexpression in ATDC5 cells,25749104,Mouse,Cell line,Gene perturbation,SXR,Overexpression,Microarray,TRUE,Affy-ST
+GSE60651,CEBPA overexpression in chondrocytes,25749148,Mouse,Cell line,Gene perturbation,CEBPA,Overexpression,Microarray,TRUE,1C-Agilent
+GSE60737,HES1 overexpression in ATDC5 chondocytes,25733872,Mouse,Cell line,Gene perturbation,HES1,Overexpression,Microarray,TRUE,1C-Agilent
+GSE60761,Calcr knockout osteoclasts,25333900,Mouse,Bone,Gene perturbation,Calcr-/ w.o Calcitonin,Knockout,Microarray,FALSE,Affy
+GSE60762,Osteoarthritic and healthy labrum cells,25371314,Human,Labrum,Disease,Osteoarthritis,Overexpression,Microarray,FALSE,Affy-ST
+GSE62914,iPSC generated chondrocytes,25911615,Human,Cartilage,Development,iPSC,,Microarray,FALSE,Affy-ST
+GSE63017,Pax1 and Pax9 in Embryonic Intervertebral Disc Development,28011632,Mouse,Cartilage,Gene perturbation,Pax1/Pax9,Knockout,Microarray,FALSE,Illumina
+GSE63939,Mouse model of human osteosarco,25571841,Mouse,Cell line,Tissue,osteoblast cell lines,,Microarray,FALSE,Affy-ST
+GSE64141,Chondrogenic Differentiation of ATDC5 cells,26363184,Mouse,Cell line,Differentiation,Differentiation,,Microarray,TRUE,Affy-ST
+GSE64394,Osteoarthritic chondrocytes,25940674,Human,Cartilage,Disease,Osteoarthritis,,Microarray,FALSE,Affy-ST
+GSE64965,Sox2 knockdown in osteosarcoma cells,25832504,Mouse,Bone,Gene perturbation,Sox2,Knockdown,Microarray,FALSE,Affy
+GSE65745,Estrogen inhibition of RUNX2-Mediated Osteoblast-Driven Osteoclastogenesis,25701138,Mouse,Bone,Exogenous,Estradiol,,Microarray,FALSE,Illumina
+GSE66416,Periostin overexpressing MC3T3-E1 cells,26809067,Mouse,Cell line,Gene perturbation,POSTN,Overexpression,Microarray,TRUE,Affy-ST
+GSE66554,Knee articular cartilage at different developmental stages,NA,Rat,Cartilage,Development,Cartilage development,,Microarray,FALSE,Affy-ST
+GSE66635,Meniscus and Articular Cartilage from Knees Undergoing Arthroscopic Partial Meniscectomy,24692131,Human,Cartilage,Disease,Torn meniscus,,Microarray,FALSE,Affy-ST
+GSE66862,Eed knockout in chondrocytes,27329220,Mouse,Cartilage,Gene perturbation,Eed,Knockout,Microarray,FALSE,Affy-ST
+GSE68038,Cultured chondrocytes from knee and proximal interphalangeal joints,26773445,Human,Cartilage,Tissue,Knee and finger cartilage,,Microarray,FALSE,Affy-ST
+GSE68428,LAMA4 and/or IL1B treated chondrocytes,26295200,Human,Cartilage,Exogenous,Lama4 + IL1,,Microarray,FALSE,Affy-ST
+GSE69108,Developing mammalian chondrocytes,26146088,Mouse,Cartilage,Tissue,Nasal vs Rib,,Microarray,FALSE,Affy-ST
+GSE69459,FOP- or resFOP-iMSCs after chondrogenic differentiation,26621707,Human,Bone,Disease,Fibrodysplasia ossificans progressiva,,Microarray,TRUE,Affy-ST
+GSE69992,Role of MSX1 in Osteogenic Differentiation of Dental Pulp Cells,27648077,Human,,Gene perturbation,MSX1,Knockdown,Microarray,FALSE,1C-Agilent
+GSE70719,HOS (human osteosarcoma) cells exposed to fluoride,27234253,Human,Cell line,Exogenous,Floride,,Microarray,FALSE,Affy
+GSE7116,Osteonecrosis of the jaw peripheral blood mono nuclear cells,18413829,Human,Blood,Disease,Osteonecrosis,,Microarray,FALSE,Affy
+GSE71565,Primary osteoblast differentiation,NA,Mouse,Bone,Development,Osteoblast differentiation,,Microarray,TRUE,Affy
+GSE72261,XBP1 perturbation in MCDS mouse model,26372225,Mouse,Cartilage,Gene perturbation,Xbp1 or Col10a1,Knockin,Microarray,FALSE,Illumina
+GSE72575,IL1B and/or glucosamine-treated human synovial MH7A cells,27776166,Human,Synovium,Exogenous,IL1B,,Microarray,FALSE,Affy-ST
+GSE74898,Exercise dependent gene regulation in cartilage,26924420,Rat,Cartilage,Disease,Exercise,,Microarray,FALSE,Affy-ST
+GSE75181,Osteoarthritic chondrocytes treated with curcuminoids extract hydrolyzed collagen and green tea extract and/or IL1B,27275599,Human,Cartilage,Exogenous,COT and/or IL1B,,Microarray,FALSE,Illumina
+GSE75230,Osteoblast Differentiation of hFOB cells,26890492,Human,Cell line,Development,Osteoblast differentiation,,Microarray,FALSE,Affy
+GSE7669,Synovial fibroblasts from rheumatoid arthritis and osteoarthritis,17594488,Human,Synovium,Disease,Osteoarthritis, RA,Microarray,FALSE,Affy
+GSE7683,Dexamethasone-treated primary chondrocytes,17603917,Mouse,Cartilage,Exogenous,dexamethasone,,Microarray,FALSE,Affy
+GSE77916,DOT1L inhibition with EPZ-5676 in human chondrocytes,28627522,Human,Cartilage,Gene perturbation,EPZ-5676,DOTL1 inhibition,Microarray,FALSE,Affy
+GSE78980,PTHrP in Osteoblast Response to Microgravity,27463808,Mouse,Bone,Gene perturbation,PTHrP,Knockout,Microarray,TRUE,Illumina
+GSE79176,Effect of polyphosphates on osteoblast mineralization,NA,Rat,Bone,Exogenous,polyphosphates,,Microarray,TRUE,1C-Agilent
+GSE80614,Differentiating hMSC into Osteoblasts and Adipocytes.,28344004,Human,Bone,Development,Differentiation,,Microarray,FALSE,Illumina
+GSE81399,DMP KO in Cxcl12-abundant reticular cells,27237054,Mouse,Bone,Gene perturbation,Dmp1,Knockout,Microarray,FALSE,Affy
+GSE84609,GDF11 stimulation of RANKL-induced osteoclastogenesis,27653144,Mouse,Bone,Exogenous,GDF11,,Microarray,FALSE,Affy-ST
+GSE84907,Osteoblast-like MC3T3 cell line viability at alkaline pH ,28955732,Mouse,Cell line,Culture,pH,,Microarray,FALSE,Affy-ST
+GSE85254,Galectin-3 treated osteoarthritic chondrocytes ,27982117,Human,Cartilage,Exogenous,Gal-3,,Microarray,FALSE,Affy
+GSE85785,Leptin treated cartilage,28690479,Rat,Cartilage,Exogenous,Leptin,,Microarray,FALSE,1C-Agilent
+GSE86578,Primary human articular chondrocytes exposed to IL-1+OSM,27956552,Human,Cartilage,Exogenous,IL1B+OSM,,Microarray,FALSE,Illumina
+GSE90127,Effect of cabozantinib of mouse osteoblasts differentiation,29088840,Mouse,Bone,Development Exogenous,Differentiation,cabozantinib,Microarray,TRUE,1C-Agilent
+GSE9247,Histone deacetylase inhibitors in osteoblast development,17925016,Mouse,Bone,Exogenous,trichostatin A or  MS-275  or valproic acid,HDAC inhibition,Microarray,FALSE,Affy
+GSE9329,Rheumatoid arthritis and osteoarthritis synovial membrane,18187038,Human,Synovium,Disease,RA,Osteoarthritis,Microarray,TRUE,Affy
+GSE93698,Systemic sclerosis tenosynovial biopsies,NA,Human,Synovium,Disease,tenosynovitis RA Osteoarthritis,,Microarray,FALSE,Affy
+GSE93720,Human synovial fibroblasts treated with TNF+IL-17,28228280,Human,Synovium,Exogenous,TNF+IL-17,,Microarray,TRUE,Affy
+GSE99306,Chondrocytes subpopulations of 13del Chop-/- mouse model of MCDS,NA,Mouse,Cartilage,Gene perturbation,Col10a1 Chop,Knockin Knockout,Microarray,FALSE,Affy
+GSE99414,Primary murine pre-osteoblasts from control and Il15ra knockout mice,28602725,Mouse,Bone,Gene perturbation,Il15ra,Knockout,Microarray,FALSE,Affy-ST
+E-ERAD-89,Melatonin signaling in osteoblast,NA,Mouse,Bone,Exogenous,Melatonin/Serotonin,,RNASeq,TRUE,RNASeq
+E-GEOD-45893,Osr1 mutant chondrogenesis during tongue development.,24167250,Mouse,Cartilage,Gene perturbation,Osr1,Knockin,RNASeq,TRUE,RNASeq
+E-GEOD-53105,Osteoblast specific knockout of Dlx3 in mice,24948010,Mouse,Bone,Gene perturbation,Dlx3,Knockout,RNASeq,FALSE,RNASeq
+E-GEOD-54461,Temporal gene expression across osteoblastogenesis,24945404,Mouse,Bone,Development,Osteoblast differentiation,NA,RNASeq,FALSE,RNASeq
+E-GEOD-55769,Estrogen receptor alpha mutants in osteoblasts,NA,Human,Bone,Gene perturbation,Esr1,Knockin,RNASeq,FALSE,RNASeq
+E-GEOD-69110,SOX9 overexpression in chondrocytes,26146088,Human,Cartilage,Gene perturbation,SOX9,Overexpression,RNASeq,FALSE,RNASeq
+E-GEOD-73372,Developing rib chondrocyte,27471255,Mouse,Cartilage,Development,NA,,RNASeq,TRUE,RNASeq
+E-GEOD-75549,HDAC3 knockout mouse chondrocytes,27507649,Mouse,Cartilage,Gene perturbation,HDAC3,Knockout,RNASeq,TRUE,RNASeq
+E-GEOD-76988,STAT5 KO in osteoclast differentiation,27485735,Mouse,Bone,Gene perturbation,STAT3,Knockout,RNASeq,TRUE,RNASeq
+E-MTAB-2923,Comprehensive Analysis of Hematopoietic Stem Cell Niche,NA,Mouse,Bone,Tissue,Bone marrow cell types,,RNASeq,TRUE,RNASeq
+E-MTAB-3428,Bma1 knock out mouse cartilage,26657859,Mouse,Cartilage,Gene perturbation,Bmal1,Knockout,RNASeq,TRUE,RNASeq
+E-MTAB-4304,Human intact and damaged osteoarthrtitic cartilage,26973327,Human,Cartilage,Disease,Osteoarthritis,,RNASeq,FALSE,RNASeq
+E-MTAB-4879,Musculoskeletal ageing using human mesenchymal stem cells and their tissue constructs,NA,Human,Cartilage Bone,Development,Age,,RNASeq,FALSE,RNASeq
+GSE102856,Senp6 knockout in osteochondroprogenitors,29321472,Mouse,Bone,Gene perturbation,Senp6,,RNASeq,TRUE,RNASeq
+GSE103492,Wnt3a treated Lrp5/6KO osteoblasts,29176883,Mouse,Bone,Gene perturbation Exogenous,Lrp5/6 Wnt3a ,Knockout,RNASeq,FALSE,RNASeq
+GSE106259,CCR5 signalling in osteoclasts,29263385,Mouse,Bone,Exogenous,CCL5,,RNASeq,FALSE,RNASeq
+GSE23492,Porcine articular and growth plate cartilage,20950698,Pig,Cartilage,Tissue,articular and growth plate cartilage,,Microarray,TRUE,Affy
+GSE44991,Porcine osteochondrosis cartilage,23922127,Pig,Cartilage,Disease,Osteochondrosis,,Microarray,FALSE,Affy
+GSE39796,Bovine cartilage zones,23124445,Cow,Cartilage,Tissue,cartilage zones,,Microarray,TRUE,Affy
+GSE18394,Bovine mesenchymal stem cell chondrogenesis,20367254,Cow,Cartilage,Development,MSC differentiation,,Microarray,FALSE,Affy
+GSE29233,TGF-beta treated bovine articular chondrocytes,22394585,Cow,Cartilage,Exogenous,TGF-Beta,,Microarray,TRUE,Affy
+E-MEXP-2291,Bovine nucleus pulposus articular cartilage and annulus fibrosus ,20149220,Cow,Cartilage,Tissue,nucleus pulposus/articular cartilage/annulus fibrosus ,,Microarray,TRUE,Affy
+GSE110581,Zfp36l1 overexpression/knockdown in primary mouse articular chondrocytes,,Mouse,Cartilage,Gene perturbation,Zfp36l1,Overexpression/Knockdown,Microarray,FALSE,1C-Agilent
+GSE47799,Mouse embryonic meniscus articular cartilage and cruciate ligaments,24108661,Mouse,Cartilage Ligament Meniscus,Tissue,Cartilage Ligament Meniscus,,Microarray,FALSE,Illumina
+E-MTAB-5879,Articular cartilage in a porcine model of early post-traumatic osteoarthritis,28671352,Pig,Cartilage,Disease,Anterior cruciate ligament (ACL) transection,,RNASeq,FALSE,RNASeq
+E-MTAB-4294,Synovium from a preclinical model of post-traumatic knee osteoarthritis with corticosteroid treatment,26866935,Pig,Synovium,Disease Exogenous,unilateral ACL transection/treatment with triamcinolone acetonide,,RNASeq,FALSE,RNASeq
+E-MTAB-3186,Synovium from a pig model of post-traumatic osteoarthritis,,Pig,Synovium,Disease,unilateral ACL transection,,RNASeq,FALSE,RNASeq
+GSE110303,Estradiol Effects in Skeletally Mature (17-week old) Female WT and Estrogen Receptor Alpha Knockout Mice,28643917,Mouse,Cartilage,Gene perturbation,ESR1,Knockout,RNASeq,TRUE,RNASeq
+GSE110300,Estradiol Effects in Skeletally Immature (7-weeks old) Female WT and Estrogen Receptor Alpha Knockout Mice,28643917,Mouse,Cartilage,Gene perturbation,ESR1,Knockout,RNASeq,TRUE,RNASeq
+GSE110281,e13.5 Sox-GFP forming digit e14.5 Lgr5-GFP+ interzone and e14.5 GFP- surrounding tissues in digit,,Mouse,Embryo,Tissue,E13.5 and E14.5,,RNASeq,TRUE,RNASeq
+GSE104459,E9.5 E11.5 and E12.5 wild type and Pitx1 KO mice,29273440,Mouse,Embryo,Gene perturbation,Pitx1,Knockout,RNASeq,FALSE,RNASeq
+GSE110051,Embryo bone immature cartilage and mature cartilage,,Mouse,Embryo,Development,bone immature cartilage and mature cartilage,,RNASeq,FALSE,RNASeq
+E-MTAB-5564,Osteoarthritic bone marrow lesions compared to normal bone,28705915,Human,Bone,Disease,Osteoarthritis,,Microarray,FALSE,1C-Agilent
+Cytokine_Explant,IL1B or TNF induced expression in osteoarthritis cartilage explants,NA,Human,Cartilage,Exogenous,IL1B TNF,,RNASeq,FALSE,RNASeq
+FN1_Explant,Fibronectin induced expression in osteoarthritis cartilage explants,NA,Human,Cartilage,Exogenous,Fibronectin,,RNASeq,FALSE,RNASeq
+E-MTAB-6266,Human intact knee osteoarthritic and nonOA cartilage,29273645,Human,Cartilage,Disease,Osteoarthritis,,RNASeq,FALSE,RNASeq
+E-MTAB-6266_B,Human intact knee osteoarthritic subgroups and nonOA cartilage,29273646,Human,Cartilage,Disease,Osteoarthritis,,RNASeq,FALSE,RNASeq
+GSE111628,Osteoblast from sham ovariectomized mice (OVX) with and without treadmill training,,Mouse,Bone,Disease,Exercise,,RNASeq,TRUE,Affy-ST
+GSE77753,Ehlers-Danlos Syndrome Hypermobility type/Joint Hypermobility Syndrome patients' skin fibroblasts,27518164,Human,Skin,Disease,Joint Hypermobility Syndrome,,Microarray,FALSE,Affy-ST
+GSE43861,Fibrogenesis imperfecta ossium bone biopsy,,Human,Bone,Disease,Fibrogenesis imperfecta ossium,,Microarray,TRUE,Affy
+GSE5657,Effect of X-linked hypophosphatemia (the Hyp mutation) in mice,,Mouse,Bone,Disease Gene perturbation,X-linked hypophosphatemia PHEX,,Microarray,FALSE,Affy
+GSE112809,Treatment of rheumatoid arthritis patients with chaperonin 10,16950363,Human,Blood,Disease,Rheumatoid arthritis,,Microarray,TRUE,Affy
+GSE111946,Modulation of microRNA-218 in fibroblast-like synovial cells,,Human,Synovium,Gene perturbation,Mir-218,Overexpression Knockdown,Microarray,TRUE,1C-Agilent
+GSE13782,Proteoglycan-induced spondylitis mouse model of spondyloarthropathy,,Mouse,Cartilage,Exogenous,Aggrecan,,Microarray,FALSE,Affy
+GSE41039,Proteoglycan-induced spondylitis mouse model,23171658,Mouse,Cartilage,Exogenous,Aggrecan,,Microarray,FALSE,Illumina
+E-MTAB-3201,Synovial biopsies from psoriatic arthritis,,Human,Synovium,Disease,Psoriatic arthritis,,Microarray,FALSE,Affy
+GSE112694,Osteogenic differentiation of mouse Zfp384 knockout MSCs,,Mouse,Bone,Gene perturbation,Zfp384,Knockout,RNASeq,FALSE,RNASeq
+GSE84198,Ezh2 knockout growth plate zones,,Mouse,Cartilage,Gene perturbation,Ezh2,Knockout,Microarray,FALSE,Affy

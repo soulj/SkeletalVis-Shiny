@@ -1,0 +1,19 @@
+Network	Size	pvalue	topGOBPTerm
+1	19	2.66792633879429e-42	extracellular matrix organization
+2	18	1.70326814542475e-32	type I interferon signaling pathway
+3	7	8.56995713520882e-15	clathrin-coated vesicle membrane
+4	7	4.9318463891988e-13	platelet dense tubular network membrane
+5	8	1.78885359483487e-12	embryonic morphogenesis
+6	8	5.11701847532018e-12	cyclooxygenase pathway
+7	5	1.94691949829491e-10	GKAP/Homer scaffold activity
+8	4	2.63572375717432e-10	muscle contraction
+9	6	3.87959660730272e-09	O-glycan processing
+10	3	7.87270943205108e-07	semaphorin-plexin signaling pathway
+11	3	1.99972495121966e-06	blood coagulation, extrinsic pathway
+12	3	4.25020906298909e-06	focal adhesion
+13	3	5.90659499480622e-06	fibroblast growth factor receptor binding
+14	5	7.67710031038292e-06	transcription factor activity, RNA polymerase II transcription factor recruiting
+15	2	1.21237637894036e-05	eating behavior
+16	3	2.34935911350909e-05	cholesterol ester hydrolysis involved in cholesterol transport
+17	2	2.78969029416782e-05	negative regulation of extrinsic apoptotic signaling pathway
+18	4	4.51539382260895e-05	mitochondrial envelope

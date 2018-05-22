@@ -1,0 +1,2 @@
+Factor	Numerator	Denominator
+Condition	HobRA	Hob
