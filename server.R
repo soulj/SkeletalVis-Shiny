@@ -1203,7 +1203,7 @@ function(input, output, session) {
       dt[,2] <- signif(dt[,2], digits = 3)
       dt[,3] <- signif(dt[,3], digits = 3)
       dt[,4] <- signif(dt[,4], digits = 3)
-      colnames(dt)[1:4] <- c("Signed Jaccard (FC)","Cosine","Signed Jaccard (Sig)","Characteristic Direction")
+      colnames(dt)[1:4] <- c("Signed Jaccard (FC)","Cosine","Signed Jaccard (Sig)","Signed Jaccard (ChrDir)")
       dt
     }
   })
@@ -1650,7 +1650,7 @@ function(input, output, session) {
       colours<-  cmap(dt[,4], map = map)
       style.chrDirZscore <- styleEqual(dt[,4], colours)
       
-      colnames(dt)[1:4] <- c("Signed Jaccard (sig)","Characteristic Direction","Signed Jaccard zscore", "Characteristic Direction zscore")
+      colnames(dt)[1:4] <- c("Signed Jaccard (sig)","Signed Jaccard (ChrDir)","Signed Jaccard (sig) zscore", "Signed Jaccard (ChrDir) zscore")
       
       dt<-datatable(
         dt,
