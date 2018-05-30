@@ -20,15 +20,33 @@ function(input, output, session) {
   getJaccardHist <-function(ID,jaccardZScores) {
     zscores <- getSimilarityTable()[,"jaccard",F]
     colnames(zscores)<-"V1"
-    ggplot(zscores,aes(V1)) +  geom_histogram(bins = 100,fill="lightgrey") + cowplot::theme_cowplot(font_size = 24) +scale_x_continuous(name = "Signed Jaccard coefficient") + scale_y_continuous(name = "Count")
+    ggplot(zscores,aes(V1)) +  geom_histogram(bins = 50,fill="lightgrey") + cowplot::theme_cowplot(font_size = 24) +scale_x_continuous(name = "Signed Jaccard coefficient") + scale_y_continuous(name = "Count")
   }
   
   
   getCosineHist <-function(ID,cosineZScores) {
     zscores <- getSimilarityTable()[,"cosine",F]
     colnames(zscores)<-"V1"
-    ggplot(zscores,aes(V1)) +  geom_histogram(bins = 100,fill="lightgrey") + cowplot::theme_cowplot(font_size = 24) +scale_x_continuous(name = "Cosine coefficient") + scale_y_continuous(name = "Count")
+    ggplot(zscores,aes(V1)) +  geom_histogram(bins = 50,fill="lightgrey") + cowplot::theme_cowplot(font_size = 24) +scale_x_continuous(name = "Cosine coefficient") + scale_y_continuous(name = "Count")
   }
+  
+  
+  getJaccardZscoreHist <-function(ID,jaccardZScores) {
+    zscores <- getJaccardSim()[,3,F]
+    zscores[is.nan(zscores[,1]),] <- NA
+    colnames(zscores)<-"V1"
+    ggplot(zscores,aes(V1)) +  geom_histogram(bins = 50,fill="lightgrey") + cowplot::theme_cowplot(font_size = 24) +scale_x_continuous(name = "z-score") + scale_y_continuous(name = "Count")
+  }
+  
+  
+  getChrDirZscoreHist <-function(ID,cosineZScores) {
+    zscores <- getJaccardSim()[,4,F]
+    zscores[is.nan(zscores[,1]),] <- NA
+    colnames(zscores)<-"V1"
+    ggplot(zscores,aes(V1)) +  geom_histogram(bins = 50,fill="lightgrey") + cowplot::theme_cowplot(font_size = 24) +scale_x_continuous(name = "z-score") + scale_y_continuous(name = "Count")
+  }
+  
+  
   
   #generic null table for when no experiment/comparison is selected
   makeNullTable <- function(){
@@ -282,6 +300,7 @@ function(input, output, session) {
     if (!is.null(id) & id == "sig"){
       div(textAreaInput("UpRegulated", label = "Enter up-regulated gene names",resize="vertical"),
           textAreaInput("DownRegulated", "Enter down-regulated gene names",resize="vertical"),
+          textAreaInput("Background", "Enter the background/all expressed genes (optional)",resize="vertical"),
           selectInput("speciesSelectSig", "Select species", c("Human","Mouse","Rat","Zebrafish","Cow","Horse","Pig")),
           actionButton("sigSearch", "Search"))
     }
@@ -1141,6 +1160,18 @@ function(input, output, session) {
     
   })
   
+  #create the jaccard plot for the sig search
+  output$sigJaccZscore = renderPlot({
+      jaccardPlot <- getJaccardZscoreHist()
+      jaccardPlot
+    })
+  
+  #create the chrdir plot for the sig search
+  output$chrDirZscore = renderPlot({
+    chrDirPlot <- getChrDirZscoreHist()
+    chrDirPlot
+  })
+  
   #load the similarity calculations
   getSimilarityTable <- reactive({
     id = input$expTable_row_last_clicked
@@ -1513,8 +1544,8 @@ function(input, output, session) {
   }
   
   #calculate signed jaccard similarity
-  signedJaccardSigCreate<-function(i,queryUp,queryDown,foldChangeListUp,foldChangeListDown){
-
+  signedJaccardSigCreate<-function(i,queryUp,queryDown,foldChangeListUp,foldChangeListDown,background){
+    
     set1Up<-foldChangeListUp[[i]]
     set1Down<-foldChangeListDown[[i]]
     
@@ -1523,12 +1554,16 @@ function(input, output, session) {
     queryUp <- queryUp[ queryUp %in% expressed$ID]
     queryDown <- queryDown[ queryDown %in% expressed$ID]
     
+    if(length(background)>0){
+      set1Up <- set1Up[set1Up %in% background]
+      set1Down <- set1Down[set1Down %in% background]
+    }
     
     return(signedJaccard(set1Up,set1Down,queryUp,queryDown))
   }
   
   #calculate signed jaccard similarity
-  signedJaccardCreateChrDir<-function(i,queryUp,queryDown,chrDirs){
+  signedJaccardCreateChrDir<-function(i,queryUp,queryDown,chrDirs,background){
 
     if (is.na( chrDirs[i])){
       return(NA)
@@ -1553,16 +1588,18 @@ function(input, output, session) {
     
     upRegulated <- unlist(strsplit(input$UpRegulated,"[ \t\r\n]"))
     downRegulated <- unlist(strsplit(input$DownRegulated,"[ \t\r\n]"))
+    background <- unlist(strsplit(input$Background,"[ \t\r\n]"))
     
     
     if (input$speciesSelectSig != "Human"){
       upRegulated <- convertGenes(upRegulated,tolower(input$speciesSelectSig))
       downRegulated <- convertGenes(downRegulated,tolower(input$speciesSelectSig))
+      background <- convertGenes(background,tolower(input$speciesSelectSig))
     }
           
-    sigJaccards <- sapply(seq_along(upSigs),signedJaccardSigCreate,upRegulated,downRegulated,upSigs,downSigs)
+    sigJaccards <- sapply(seq_along(upSigs),signedJaccardSigCreate,upRegulated,downRegulated,upSigs,downSigs,background)
     
-    chrDirs <- sapply(seq_along(chrDirsList),signedJaccardCreateChrDir,upRegulated,downRegulated,chrDirsList)
+    chrDirs <- sapply(seq_along(chrDirsList),signedJaccardCreateChrDir,upRegulated,downRegulated,chrDirsList,background)
     
     
     sigJaccards <- data.frame(ID=names(upSigs),sigJaccard=sigJaccards,chrDir=chrDirs)
@@ -1574,6 +1611,10 @@ function(input, output, session) {
     sigJaccards <- sigJaccards[ ,c(2,3,4,14,1,5:13)]
     sigJaccards <- sigJaccards[ order(sigJaccards[,1]),]
     
+    sigJaccards <- tibble::add_column(sigJaccards, as.vector(scale(sigJaccards[,1])),.after = 2)
+    sigJaccards <- tibble::add_column(sigJaccards, as.vector(scale(sigJaccards[,2])),.after = 3)
+    
+    
   })
   
   #sim output
@@ -1581,42 +1622,61 @@ function(input, output, session) {
     dt <- getJaccardSim()
  
     if (!all(na.omit(dt[,1])==0)){
-    dt[,1] <- signif(dt[,1], digits = 3)
-    dt[,2] <- signif(dt[,2], digits = 3)
-    
-    maxVal<-max(abs(c(dt[,1],dt[,2])),na.rm = T) + 0.001
-    minVal<- -maxVal
-    breaksList = seq(minVal, maxVal, by = 0.001)
-    colfunc <- colorRampPalette(c("green", "white","red"))
-    map <- makecmap(dt[,1],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
-    colours<-  cmap(dt[,1], map = map)
-    style.sigjacc <- styleEqual(dt[,1], colours)
-    map <- makecmap(dt[,2],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
-    colours<-  cmap(dt[,2], map = map)
-    style.chrDir <- styleEqual(dt[,2], colours)
-    
-    colnames(dt)[1:2] <- c("Signed Jaccard (sig)","Characteristic Direction")
-    
-    dt<-datatable(
-      dt,
-      rownames = F,caption = tags$caption(
-        style = 'caption-side: left; color: black;text-align: left;', tags$b("Search Summary")),
-      extensions = 'Scroller',
-      options = list(
-        scrollY = 300,
-        scrollX = 500,
-        scroller = TRUE,
-        pageLength = 50,
-        lengthChange = TRUE,
-        bInfo = FALSE,
-        order = list(0, 'desc'),buttons = c('copy', 'csv')
-        
-      ),
-      selection = list(mode = "single"),
-      filter = "top")
-      dt <- formatStyle(dt,1, backgroundColor = style.sigjacc)
-      dt <- formatStyle(dt,2, backgroundColor = style.chrDir)
-    dt
+      
+      dt[,1] <- signif(dt[,1], digits = 3)
+      dt[,2] <- signif(dt[,2], digits = 3)
+      dt[,3] <- signif(dt[,3], digits = 3)
+      dt[,4] <- signif(dt[,4], digits = 3)
+      
+      maxVal<-max(abs(c(dt[,1],dt[,2])),na.rm = T) + 0.001
+      minVal<- -maxVal
+      breaksList = seq(minVal, maxVal, by = 0.001)
+      colfunc <- colorRampPalette(c("green", "white","red"))
+      map <- makecmap(dt[,1],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      colours<-  cmap(dt[,1], map = map)
+      style.sigjacc <- styleEqual(dt[,1], colours)
+      map <- makecmap(dt[,2],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      colours<-  cmap(dt[,2], map = map)
+      style.chrDir <- styleEqual(dt[,2], colours)
+      
+      maxVal<-max(abs(c(dt[,3],dt[,4])),na.rm = T) + 0.001
+      minVal<- -maxVal
+      breaksList = seq(minVal, maxVal, by = 0.001)
+      colfunc <- colorRampPalette(c("green", "white","red"))
+      map <- makecmap(dt[,3],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      colours<-  cmap(dt[,3], map = map)
+      style.sigjaccZscore <- styleEqual(dt[,3], colours)
+      map <- makecmap(dt[,4],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      colours<-  cmap(dt[,4], map = map)
+      style.chrDirZscore <- styleEqual(dt[,4], colours)
+      
+      colnames(dt)[1:4] <- c("Signed Jaccard (sig)","Characteristic Direction","Signed Jaccard zscore", "Characteristic Direction zscore")
+      
+      dt<-datatable(
+        dt,
+        rownames = F,
+        caption = tags$caption(
+          style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Search Summary")),
+        extensions = c("Buttons",'Scroller'),
+        options = list(
+          scrollY = 300,
+          scrollX = 500,
+          scroller = F,
+          pageLength = -1,
+          lengthChange = T,
+          bInfo = F,
+          dom = 'frtB',
+          lengthMenu = list( c(10, 20, -1), c(10, 20, "All")),
+          order = list(0, 'desc'),
+          buttons = c("copy", "csv")
+        ),
+        selection = list(mode = "single"),
+        filter = "top")
+        dt <- formatStyle(dt,1, backgroundColor = style.sigjacc)
+        dt <- formatStyle(dt,2, backgroundColor = style.chrDir)
+        dt <- formatStyle(dt,3, backgroundColor = style.sigjaccZscore)
+        dt <- formatStyle(dt,4, backgroundColor = style.chrDirZscore)
+      dt
     } else {
       dt<-as.data.frame("No matches found")
       colnames(dt)=""
@@ -1629,7 +1689,7 @@ function(input, output, session) {
       dt
     }
     
-  }
+  },server = T
   )
   
   #sig search gene overlap
@@ -1729,9 +1789,11 @@ function(input, output, session) {
     venn <- makeQueryResponseVenn()
     if(!is.null(venn)){
       overlapTable <- datatable(venn,rownames = F,caption = tags$caption(
-        style = 'caption-side: left; color: black;text-align: left;', tags$b("Differentially Expressed Genes")),
+        style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Differentially Expressed Genes")),
                                 options = list(scrollY = "400px",
                                                lengthChange = FALSE,
+                                               dom = 'rtiB',
+                                               extensions = c("Buttons",'Scroller'),
                                                bInfo = FALSE,searching = FALSE, paging =FALSE ,buttons = c('copy', 'csv')),
                                 selection = list(mode = "single"))
     }
@@ -1743,9 +1805,11 @@ function(input, output, session) {
     venn <- makeQueryResponseChrDirVenn()
     if(!is.null(venn)){
       overlapTable <- datatable(venn,rownames = F,caption=tags$caption(
-        style = 'caption-side: left; color: black; text-align: left;', tags$b("Characteristic Direcion")),
+        style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Characteristic Direcion")),
                                 options = list(scrollY = "400px",
+                                               extensions = c("Buttons",'Scroller'),
                                                lengthChange = FALSE,
+                                               dom = 'rtiB',
                                                bInfo = FALSE,searching = FALSE, paging =FALSE ,buttons = c('copy', 'csv')),
                                 selection = list(mode = "single"))
     }

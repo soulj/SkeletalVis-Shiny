@@ -371,7 +371,7 @@ navbarPage(
         popify(
           uiOutput("sigSearchHelp"),
           title = "Compare by Signature",
-          content = "Enter up and down regulated genes to compare your transcriptomic signature to the database"
+          content = "Enter up and down regulated genes to compare your transcriptomic signature to the database. Optionally enter the background of all expressed genes in your experiment to improve the accuracy of the similarity calculations"
         )
       ),
       mainPanel(tabsetPanel(
@@ -390,12 +390,17 @@ navbarPage(
           title = "Compare by signature",
           value = "sig",
           icon = icon("table"),
+          tabsetPanel(tabPanel(
+            title="Search Results", icon = icon("table"),
           conditionalPanel("$('#sigSummary').hasClass('recalculating')",
                            tags$div(h2('Searching ... '))),
           DT::dataTableOutput("sigSummary"),
           DT::dataTableOutput("sigOverlap"),
           DT::dataTableOutput("sigChrDirOverlap")
-        )
+        ),
+        tabPanel("Signed Jaccard Plot", plotOutput("sigJaccZscore")),
+        tabPanel("Characteristic Direction Plot",  plotOutput("chrDirZscore"))
+        ))
       ))
     )
   ),
@@ -555,9 +560,9 @@ navbarPage(
         ),
         h3("Characteristic Direction", align = "left", id =
              "charDirect"),
-        h4(
-          "The characteristic Direction method gives the genes that best seperate the samples in the comparison and has been shown to be more sensitive than limma/DESeq2 in identifying differentially expressed genes"
-        ),
+        h4("The characteristic direction method gives the genes that best seperate the samples in the comparison and has been shown to be more sensitive than limma/DESeq2 in identifying differentially expressed genes. The top 500 genes are shown which can be considered a differential expression signature of the expression response. Please see"),
+        tags$a(href="http://doi.org/10.1186/1471-2105-15-79","http://doi.org/10.1186/1471-2105-15-79",target="_blank"),
+        h4("for details of the method"),
         h4(
           "The table can be searched using the search box, sorted by clicking the columns and filtered using the column filters."
         ),
