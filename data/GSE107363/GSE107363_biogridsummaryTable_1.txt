@@ -1,0 +1,19 @@
+Network	Size	pvalue	topGOBPTerm
+1	16	9.16995985531756e-33	cell surface receptor signaling pathway
+2	10	1.46728756210622e-17	desmosome
+3	8	4.83749082284713e-16	collagen catabolic process
+4	4	5.77635814473590e-11	MHC protein binding
+5	6	6.63233022363411e-10	mesenchyme migration
+6	5	3.74302016783633e-09	Golgi cisterna
+7	4	5.53408369855201e-08	axon extension involved in axon guidance
+8	4	1.3186563571164e-07	intermediate filament
+9	4	1.8026832056081e-07	muscle cell differentiation
+10	4	7.99368889336228e-07	negative regulation of extrinsic apoptotic signaling pathway
+11	3	9.56545864856866e-07	dystrophin-associated glycoprotein complex
+12	3	1.36482554690423e-06	keratan sulfate catabolic process
+13	3	2.3981897893723e-06	cGMP-dependent protein kinase activity
+14	3	2.67465027771955e-06	inositol 1,4,5 trisphosphate binding
+15	2	2.18878117858309e-05	negative regulation of extrinsic apoptotic signaling pathway
+16	3	3.44356225778295e-05	mitochondrial tRNA wobble uridine modification
+17	3	3.56298199439802e-05	phosphoenolpyruvate carboxykinase activity
+18	3	5.6442003101148e-05	cyclooxygenase pathway

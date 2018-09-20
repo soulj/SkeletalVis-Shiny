@@ -7,7 +7,7 @@ GSE89179,CHD1 knockdown in MSC and FOB cell lines,28475736,Human,Cell line,Gene 
 GSE90890,Cdc73 knockout in osteoblasts,28384511,Mouse,Bone,Gene perturbation,Cdc73,Knockdown,RNASeq,FALSE,RNASeq
 GSE97118,Differentiation of Ezh2 deficient immature mouse chondrocytes,29280310,Mouse,Cartilage,Gene perturbation,Ezh2,Knockout,RNASeq,TRUE,RNASeq
 22659600,Human hip osteoarthritis cartilage,22659600,Human,Cartilage,Disease,Osteoarthritis,,Microarray,FALSE,Illumina
-24361742,Human cartilage osteoarthritic damage,24361742,Human,Cartilage,Disease,Osteoarthritis,,Microarray,FALSE,1C-Agilent
+24361742,Human cartilage osteoarthritic damage,24361742,Human,Cartilage,Disease,Osteoarthritis,,Microarray,FALSE,2C-Agilent
 GSE72258,Rheumatoid arthritis synovial fibroblast (RASF) after C5orf30 and HDAC1 knockdown,26316022,Human,Synovium,Gene perturbation,C5orf30 HDAC1,Knockdown,Microarray,FALSE,Illumina
 GSE57740,Chadl knockdown in ATDC cells,25451920,Mouse,Cell line,Gene perturbation,Chadl,Knockdown,Microarray,TRUE,Affy
 GSE69531,in vitro chondrogenesis of human synovial stem cells on plastic and ECM,25861949,Human,Synovium,Culture Development,Plastic and ECM,,Microarray,TRUE,Affy-ST
@@ -70,7 +70,7 @@ E-MEXP-3474,Human Kashin-beck disease and osteoarthritis cartilage,27053287,Huma
 E-MTAB-1123,Mineralizing-osteoblast specific androgen receptor knockout,22525354,Mouse,Bone,Gene perturbation,AR,Knockout,Microarray,FALSE,Affy
 E-MTAB-1391,Mineralising primary osteoblast development,23925391,Mouse,Bone,Development,Osteoblast,,Microarray,FALSE,Affy
 E-MTAB-2450,Osteoblasts treated with miR-195 mimic and or rhBMP2 ,25407900,Mouse,Bone,Gene perturbation,miR-195-5p,Overexpression,Microarray,FALSE,1C-Agilent
-E-MTAB-3010,miR450a-5p in osteoblast differentiation,NA,Human,Bone,Gene perturbation,osteoblast differentiation,,Microarray,TRUE,1C-Agilent
+E-MTAB-3010,miR450a-5p in osteoblast differentiation,NA,Human,Bone,Gene perturbation,miR450a-5p,Overexpression,Microarray,TRUE,1C-Agilent
 E-MTAB-4152,Osteoblasts co-cultured with human umbilical vein endothelial cells,26754918,Human,Bone,Culture,co-culture with human umbilical vein endothelial cells,,Microarray,FALSE,Affy-ST
 E-MTAB-5023,Sbds knockout osteoblasts,20305640,Mouse,Bone,Gene perturbation,Sbds,Knockout,Microarray,FALSE,Affy
 E-MTAB-5326,Hydrostatic pressure in ATDC5 chondrocyte precursor cells,28813497,Mouse,Cell line,Culture,Hydrostatic pressure,,Microarray,TRUE,1C-Agilent
@@ -248,7 +248,7 @@ Cytokine_Explant,IL1B or TNF induced expression in osteoarthritis cartilage expl
 FN1_Explant,Fibronectin induced expression in osteoarthritis cartilage explants,NA,Human,Cartilage,Exogenous,Fibronectin,,RNASeq,FALSE,RNASeq
 E-MTAB-6266,Human intact knee osteoarthritic and nonOA cartilage,29273645,Human,Cartilage,Disease,Osteoarthritis,,RNASeq,FALSE,RNASeq
 E-MTAB-6266_B,Human intact knee osteoarthritic subgroups and nonOA cartilage,29273646,Human,Cartilage,Disease,Osteoarthritis,,RNASeq,FALSE,RNASeq
-GSE111628,Osteoblast from sham ovariectomized mice (OVX) with and without treadmill training,,Mouse,Bone,Disease,Exercise,,RNASeq,TRUE,Affy-ST
+GSE111628,Osteoblast from sham ovariectomized mice (OVX) with and without treadmill training,,Mouse,Bone,Disease,Exercise,,Microarray,TRUE,Affy-ST
 GSE77753,Ehlers-Danlos Syndrome Hypermobility type/Joint Hypermobility Syndrome patients' skin fibroblasts,27518164,Human,Skin,Disease,Joint Hypermobility Syndrome,,Microarray,FALSE,Affy-ST
 GSE43861,Fibrogenesis imperfecta ossium bone biopsy,,Human,Bone,Disease,Fibrogenesis imperfecta ossium,,Microarray,TRUE,Affy
 GSE5657,Effect of X-linked hypophosphatemia (the Hyp mutation) in mice,,Mouse,Bone,Disease Gene perturbation,X-linked hypophosphatemia PHEX,,Microarray,FALSE,Affy
@@ -258,4 +258,31 @@ GSE13782,Proteoglycan-induced spondylitis mouse model of spondyloarthropathy,,Mo
 GSE41039,Proteoglycan-induced spondylitis mouse model,23171658,Mouse,Cartilage,Exogenous,Aggrecan,,Microarray,FALSE,Illumina
 E-MTAB-3201,Synovial biopsies from psoriatic arthritis,,Human,Synovium,Disease,Psoriatic arthritis,,Microarray,FALSE,Affy
 GSE112694,Osteogenic differentiation of mouse Zfp384 knockout MSCs,,Mouse,Bone,Gene perturbation,Zfp384,Knockout,RNASeq,FALSE,RNASeq
-GSE84198,Ezh2 knockout growth plate zones,,Mouse,Cartilage,Gene perturbation,Ezh2,Knockout,Microarray,FALSE,Affy
+GSE84198,Ezh2 knockout growth plate zones,27897169,Mouse,Cartilage,Gene perturbation,Ezh2,Knockout,Microarray,FALSE,Affy
+GSE114469,NPY Y1R-deficient osteoblastic cells,29799418,Mouse,Bone,Gene perturbation,Npy1r,Knockdown,Microarray,TRUE,Affy-ST
+E-MTAB-6700,Human osteoblasts exposed to Staphylococcus aureus,29691335,Human,Bone,Culture,Exposed to Staphylococcus aureus,,Microarray,FALSE,Affy-ST
+GSE108036,Cartilage tissue from ANP32A knockout mice,,Mouse,Cartilage,Gene perturbation,Anp32a,Knockout,Microarray,FALSE,Affy
+GSE54749,Inhibition of Hedgehog signalling in human osteoarthritic cartilage,26315393,Human,Cartilage,Exogenous,Hedgehog inhibitor,,Microarray,FALSE,Affy-ST
+GSE74220,4h IL-1b stimulation of primary human chondrocytes,27023358,Human,Cartilage,Exogenous,IL1B,,RNASeq,FALSE,RNASeq
+GSE97232,p21 misexpression in the growth plates,29944650,Mouse,Cartilage,Gene perturbation,Cdkn1a,Overexpression,RNASeq,FALSE,RNASeq
+GSE114079,Smad4-/- forelimbs at E11.5-E14.5,29735531,Mouse,Embryo,Gene perturbation,Smad4,Knockout,RNASeq,TRUE,RNASeq
+GSE104828,Tet2 knockout in osteoclast differentiation,29908294,Mouse,Bone,Gene perturbation,Tet2,Knockout,RNASeq,TRUE,RNASeq
+GSE114521,Sox9 knockout embryos,30021842,Mouse,Embryo,Gene perturbation,Sox9,Knockout,RNASeq,FALSE,RNASeq
+GSE112413,Constitutively active FGF8 signaling in embryonic skulls,29752281,Mouse,Embryo,Gene perturbation,Fgf8,Knockin,RNASeq,FALSE,RNASeq
+GSE101909,Constitutively active FGF8 signaling in hard palate,29342370,Mouse,Embryo,Gene perturbation,Fgf8,Knockin,RNASeq,FALSE,RNASeq
+GSE114007,Human osteoarthritic and nonOA cartilage,,Human,Cartilage,Disease,Osteoarthritis,,RNASeq,FALSE,RNASeq
+GSE114919,Development of the proliferative zone or hypertrophic zone of mouse growth plate,30036371,Mouse,Cartilage,Development,Growth plate,,RNASeq,FALSE,RNASeq
+GSE109503,Mesenchymal Stem Cells During Chondrogenesis,29985644,Human,Cartilage,Differentiation,MSC differentiation,,RNASeq,FALSE,RNASeq
+GSE60451,Quadruple Timp deficient mouse sternal cartilage,,Mouse,Cartilage,Gene perturbation,TIMP1-4,Knockout,Microarray,FALSE,Affy-ST
+GSE47902,Shox knockout embryonic mouse limbs,24887312,Mouse,Embryo,Gene perturbation,Shox,Knockout,Microarray,TRUE,Affy
+GSE44325,Sostdc1 knockout embryonic mouse limbs,23994639,Mouse,Embryo,Gene perturbation,Sostdc1,Knockout,Microarray,TRUE,Affy
+GSE4481,C-type natriuretic peptide (CNP) treated embryonic tibia,17374144,Mouse,Embryo,Exogenous,CNP,,Microarray,FALSE,Affy
+GSE102292,Mouse chondrocyte culture time course,,Mouse,Cartilage,Culture,,,Microarray,TRUE,Affy
+GSE109108,De-differentiated chondrocytes over-expressing miR-138 or miR-181ab1 during osteogenic induction,,Human,Cartilage,Gene perturbation,miR-138 or miR-181ab1,Overexpression,RNASeq,FALSE,RNASeq
+GSE114919_Rat,Development of the proliferative zone or hypertrophic zone of rat growth plate,30036371,Rat,Cartilage,Development,Growth plate,,RNASeq,FALSE,RNASeq
+GSE57218_B,Human cartilage osteoarthritic damage,25054223,Human,Cartilage,Disease,Macroscopically intact/damaged osteoarthritis/ non-osteoarthritis affected cartilage,,Microarray,FALSE,Illumina
+GSE41898,Lkb1 knockout mice growth plate chondrocytes at postnatal day 30,24218567,Mouse,Cartilage,Gene perturbation,Lkb1,Knockout,Microarray,FALSE,Affy-ST
+GSE18738,Bovine Hypertrophic Growth Plate and Reserve Zone Chondrocytes,19897599,Cow,Cartilage,Tissue,Hypertrophic Growth Plate and Reserve Zone,,Microarray,FALSE,Affy
+GSE87605,Three layers in the mouse growth plate,,Mouse,Cartilage,Tissue,Round or Flat or Hypertrophic Cell layer.,,Microarray,FALSE,Affy
+GSE16981,Rat growth plates zones and time course,20096814,Rat,Cartilage,Tissue,Hypertrophic or  Proliferative or Resting,,Microarray,FALSE,Affy
+GSE29859,Hypervitaminosis A rat diaphyseal bone,22215263,Rat,Bone,Exogenous,vitamin A,,Microarray,FALSE,Affy

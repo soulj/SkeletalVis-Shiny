@@ -5,7 +5,11 @@ library(squash)
 library(feather)
 library(readr)
 library(dplyr)
-
+library(gplots)
+library(shinyWidgets)
+library(RankProd)
+library(enrichR)
+library(shinyjs)
 
 cat(file=stderr(),"\n")
 
@@ -61,10 +65,14 @@ function(input, output, session) {
     pathways
   }
   
+
   
   
   #gene search button
   getGeneFoldChangeTable <- eventReactive(input$geneSearch, {
+    
+    shinyjs::disable("geneSearch")
+    
     
     geneName <- input$GeneName
     
@@ -72,11 +80,11 @@ function(input, output, session) {
       geneName <- convertGenes(geneName, tolower(input$speciesSelectGene))
     }
     
+    print(head(geneName))
 
-    dt<-foldChangeTable[ foldChangeTable$ID == geneName,]
     
-    if (nrow(na.omit(dt))==0){
-      dt<-as.data.frame(paste0("No entry for ",geneName))
+    if (is.na(geneName) | nrow(foldChangeTable[ foldChangeTable$ID == geneName,])==0){
+      dt<-as.data.frame(paste("No entry for",input$GeneName,"for", input$speciesSelectGene,sep=" "))
       colnames(dt)=""
       dt <-
         datatable(
@@ -86,34 +94,37 @@ function(input, output, session) {
         )
     } else{ 
       
+      dt <- foldChangeTable[ foldChangeTable$ID == geneName,]
       dt<-stack(dt[,!colnames(dt)=="ID" ])
       colnames(dt) <- c("log2 FoldChange","Comparison")
       dt$Accession<-accessions[,1]
+      dt$adj.Pval <- t(pvalTable[ pvalTable$GeneName==geneName,as.character(dt$Comparison)])[,1]
+      print(head(dt$adj.Pval))
       dt$Comparison <- accessions[,"comparisonsText"]
       dt<-merge(dt,expTable,by.x="Accession",by.y="ID")
-      dt<-dt[,c(2,4,3,1,5:13)]
+      dt<-dt[,c(2,4,5,3,1,6:13)]
       dt$Accession <- sapply( dt$Accession,createIDLink)
       dt$PMID<- sapply(dt$PMID,createPMIDLink)
       #dt<-na.omit(dt)
       
       dt[,1] <- signif(dt[,1], digits = 3)
+      dt[,2] <- signif(dt[,2], digits = 3)
       
       dt<-dt[order(dt[,1],decreasing = T),]
       brks<-seq(from = min(dt[,1],na.rm = T),to=max(dt[,1],na.rm = T),length.out=100)
       clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>% {paste0("rgb(255,", ., ",", ., ")")}
       
-      maxVal<-max(abs(dt[,1])) + 0.001
+      maxVal<-max(abs(dt[,1]),na.rm = T) + 0.001
       minVal<- -maxVal
       
       breaksList = seq(minVal, maxVal, by = 0.001)
       colfunc <- colorRampPalette(c("green", "white","red"))
-      map <- makecmap(dt[,1],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      map <- makecmap(unique(dt[,1]),n = 3,breaks = breaksList,symm = T,colFn = colfunc)
       # clrs <- round(seq(255, 40, length.out = length(brks) + 1), 0) %>% {paste0("rgb(255,", ., ",", ., ")")}
       
-      colours<-  cmap(dt[,1], map = map)
-      style <- styleEqual(dt[,1], colours)
-      
-      
+      colours<-  cmap(unique(dt[,1]), map = map)
+      style <- styleEqual(unique(dt[,1]), colours)
+
       dt<-datatable(
         dt,
         rownames = F,
@@ -128,12 +139,12 @@ function(input, output, session) {
           order = list(0, 'desc'),buttons = c('copy', 'csv')
         ),
         selection = list(mode = "single"),
-        filter = "top"
+        filter = list(position = 'top', clear = FALSE, plain=TRUE)
        ,escape=F)
        dt <- formatStyle(dt,1, backgroundColor = style)
-       
-       
-      }
+
+    }
+    shinyjs::enable("geneSearch")
     dt
   })
   
@@ -159,7 +170,11 @@ function(input, output, session) {
   
   cat(file=stderr(),"\n")
   getSubnetworkTable <- reactive({
-    subnetworkTable <-read.delim(paste0("data/", getAccession(), "/", getAccession(), "_summaryTable_",v$comparisonRow ,".txt"))
+    subnetworkTable.string <-read.delim(paste0("data/", getAccession(), "/", getAccession(), "_summaryTable_",v$comparisonRow ,".txt"))
+    subnetworkTable.biogrid <-read.delim(paste0("data/", getAccession(), "/", getAccession(), "_biogridsummaryTable_",v$comparisonRow ,".txt"))
+    subnetworkTable <- rbind(subnetworkTable.string,subnetworkTable.biogrid)
+    subnetworkTable$Source <- c(rep("StringDB",nrow(subnetworkTable.string)),rep("BioGrid",nrow(subnetworkTable.biogrid)))
+    subnetworkTable <- subnetworkTable[,c(1,2,5,3:4)]
     subnetworkTable
     
   })
@@ -178,17 +193,18 @@ function(input, output, session) {
   cat(file=stderr(),"\n")
   
   #links for experiment table
-  createIDLink <- function(val) {
-    if ( grepl("GSE",val)){
-    toString(tags$a(href=paste0("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", val), target="_blank",val))
+  createIDLink <- function(ID) {
+    accession = gsub("(.*)_.*", "\\1",ID)
+    if ( grepl("GSE",accession)){
+    as.character(tags$a(href=paste0("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", accession), target="_blank",ID))
     } else {
-      toString(tags$a(href=paste0("https://www.ebi.ac.uk/arrayexpress/experiments/",val),target="_blank", val))
+      as.character(tags$a(href=paste0("https://www.ebi.ac.uk/arrayexpress/experiments/",accession),target="_blank", ID))
     }
   }
   
   createPMIDLink <- function(val) {
       if(!is.na(val)){
-      toString(tags$a(href=paste0("https://www.ncbi.nlm.nih.gov/pubmed/", val), target="_blank",val))
+        as.character(tags$a(href=paste0("https://www.ncbi.nlm.nih.gov/pubmed/", val), target="_blank",val))
       } else{
         NA
       }
@@ -212,10 +228,10 @@ function(input, output, session) {
           autoWidth = TRUE,
           pageLength = 10,
           lengthChange = TRUE,
-          bInfo = FALSE
+          bInfo = FALSE,deferRender=T
         ),
         selection = list(mode = "single"),
-        filter = "top",
+        filter = list(position = 'top', clear = FALSE),
         escape = F)
   })
   
@@ -284,14 +300,17 @@ function(input, output, session) {
   output$sharedResponseReminderText = renderUI({
     id = v$comparisonRow
     if (!is.null(id) & !is.null(v$simSummaryRow) & input$tabset =="response" & input$sharedResponse =="Summary"){
+      if (input$responseType=="Pairwise"){
       div(h4("View the experimental overlap in the Gene Overlap tab"),style="color:green")
+      }
     }
   })
   
   output$geneSearchUI = renderUI({
     id<-input$search
     if (!is.null(id) & id == "gene"){
-      div(textInput("GeneName", "Enter a Gene Name"),selectInput("speciesSelectGene", "Select species", c("Human","Mouse","Rat","Zebrafish","Cow","Horse","Pig")),actionButton("geneSearch", "Search"))
+      div(textInput("GeneName", "Enter a Gene Name"),selectInput("speciesSelectGene", "Select species", c("Human","Mouse","Rat","Zebrafish","Cow","Horse","Pig")),
+          actionButton("geneSearchExample", "Example"),actionButton("geneSearch", "Search"))
     }
   })
   
@@ -302,7 +321,7 @@ function(input, output, session) {
           textAreaInput("DownRegulated", "Enter down-regulated gene names",resize="vertical"),
           textAreaInput("Background", "Enter the background/all expressed genes (optional)",resize="vertical"),
           selectInput("speciesSelectSig", "Select species", c("Human","Mouse","Rat","Zebrafish","Cow","Horse","Pig")),
-          actionButton("sigSearch", "Search"))
+          actionButton("loadSigExample", "Example"),actionButton("sigSearch", "Search"))
     }
     
   })
@@ -373,6 +392,112 @@ function(input, output, session) {
     div(icon("fas fa-question-circle"))
   })
   
+  output$responseHelpMulti = renderUI({
+    div(icon("fas fa-question-circle"))
+  })
+  
+  output$geneOverlapHelp = renderUI({
+    div(icon("fas fa-question-circle"))
+  })
+  
+  output$chrDirOverlapHelp = renderUI({
+    div(icon("fas fa-question-circle"))
+  })
+  
+  output$sigOverlapHelp = renderUI({
+    div(icon("fas fa-question-circle"))
+  })
+  
+  
+
+  #sliders for fold change thresholds
+  output$thresholdPicker <- renderUI({
+    id = v$comparisonRow
+    if (!is.null(id) & input$tabset %in% c("Pathways","TF Enrichment","go","drug")){
+      fcOnly =expTable[input$expTable_row_last_clicked,"foldChangeOnly"]
+      print(fcOnly)
+      if (fcOnly=="FALSE"){
+        pickerInput("threshold", h3("Differential Expression Threshold"),
+                choices = c("FoldChange 1 padj 0.05"="_1_0.05","FoldChange 1.5 padj 0.05"="_1.5_0.05","FoldChange 2 padj 0.05"="_2_0.05","FoldChange 1.5 padj 1"="_1.5_1","FoldChange 2 padj 1"="_2_1")
+                ,selected=v$thresholdPickerPval)
+      } else{
+        pickerInput("threshold", h3("Differential Expression Threshold"),
+                    choices = c("FoldChange 1.5"="_1.5_1","FoldChange 2"="_2_1")
+                    ,selected=v$thresholdPickerFC
+        )
+                    
+      }
+    }
+  })
+  
+  
+  
+  #sliders for p-value threshold
+  output$thresholdSlider <- renderUI({
+
+    id = v$comparisonRow
+    if (!is.null(id) & input$sharedResponseMulti %in% c("Gene Overlap","multiGeneOverlap") & !is.null(v$similaritySummaryMultiRow)){
+      output = tagList()
+      output[[1]] = sliderInput("thresholdSlider","Choose p-value threshold",0,1,value = 0.05)
+      output[[2]] = selectInput("databaseSelect","Choose Database",choices = databases)
+      output[[3]] = actionButton(inputId = "pathwaySubmit","Pathway Analysis")
+      output
+    }
+
+  })
+
+  output$thresholdSliderHelp <- renderUI({
+    id = v$comparisonRow
+    if (!is.null(id) & input$sharedResponseMulti %in% c("Gene Overlap","multiGeneOverlap") & !is.null(v$similaritySummaryMultiRow)){
+    div(icon("fas fa-question-circle"))
+    }
+  })
+  
+  #sliders for vote counting method
+  output$voteSlider <- renderUI({
+    
+    id = v$comparisonRow
+    if (!is.null(id) & input$sharedResponseMulti %in% c("ChrDir Overlap") & !is.null(v$similaritySummaryMultiRow)){
+      output = tagList()
+      output[[1]] = sliderInput("voteSlider","Choose vote threshold",1,plotReady$chrDirCols,value = 2,step=1)
+      output[[2]] = selectInput("databaseSelectChrDir","Choose Database",choices = databases)
+      output[[3]] = actionButton(inputId = "pathwaySubmitChrDir","Pathway Analysis")
+      output
+      
+      
+    }
+  })
+  
+  output$voteSliderHelp <- renderUI({
+    id = v$comparisonRow
+    if (!is.null(id) & input$sharedResponseMulti %in% c("ChrDir Overlap") & !is.null(v$similaritySummaryMultiRow)){
+      div(icon("fas fa-question-circle"))
+    }
+  })
+  
+  #sliders for vote counting method
+  output$voteSliderSig <- renderUI({
+    
+    id = v$comparisonRow
+    if (!is.null(id) & input$sharedResponseMulti %in% c("Sig Overlap") & !is.null(v$similaritySummaryMultiRow)){
+      output = tagList()
+      output[[1]] = sliderInput("voteSliderSig","Choose vote threshold",1,plotReady$sigCols,value = 2,step=1)
+      output[[2]] = selectInput("databaseSelectSig","Choose Database",choices = databases)
+      output[[3]] = actionButton(inputId = "pathwaySubmitSig","Pathway Analysis")
+	    output
+      
+    }
+  })
+  
+  output$voteSliderSigHelp <- renderUI({
+    id = v$comparisonRow
+    if (!is.null(id) & input$sharedResponseMulti %in% c("Sig Overlap") & !is.null(v$similaritySummaryMultiRow)){
+      div(icon("fas fa-question-circle"))
+    }
+  })
+  
+  
+  
   #data download handler
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -389,7 +514,6 @@ function(input, output, session) {
       downloadDir <- makeDownloadDirectory(dataFiles,wwwFiles,plotFiles)
       
       files <- c(dataFiles,wwwFiles,plotFiles)
-      #files<-files[ -grep("zip",files)]
       print(files)
       zip(con,files)
     },contentType = "application/zip"
@@ -515,6 +639,7 @@ function(input, output, session) {
             bInfo = FALSE,
             dom = 'frtipB',
             buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"FC",sep="_")))
+            ,deferRender=TRUE
           ),
           selection = list(mode = "single"),
           filter = "top"
@@ -532,8 +657,9 @@ function(input, output, session) {
   output$pathways = DT::renderDataTable({
     id = input$expTable_row_last_clicked
     comparisonID = v$comparisonRow
-    if (!is.null(id) & !is.null(comparisonID)){
-      pathways<-paste0("data/", getAccession(), "/", getAccession(), "_pathways_",comparisonID,".txt")
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(input$threshold)){
+      pathways<-paste0("data/", getAccession(), "/", getAccession(), "_pathways_",comparisonID,input$threshold,".txt")
+      print(pathways)
       if(file.size(pathways)<5){
         pathways<-as.data.frame("No significant pathways")
         colnames(pathways)=""
@@ -549,6 +675,7 @@ function(input, output, session) {
         pathways <- read.delim(pathways)[,-5]
         pathways[, 3:ncol(pathways)] <-
           signif(pathways[, 3:ncol(pathways)], digits = 3)
+        colnames(pathways)[4] <- "Percentage Cover"
         pathways <-
           datatable(
             pathways,
@@ -561,10 +688,11 @@ function(input, output, session) {
               dom = 'frtipB',
               buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"pathways",sep="_"))),
 
-              bPaginate = FALSE
+              bPaginate = FALSE,
+              deferRender=TRUE
             ),
             selection = list(mode = "single"),
-            filter = "top"
+            filter = list(position = 'top', clear = FALSE)
           )
       }
       pathways
@@ -624,7 +752,7 @@ function(input, output, session) {
               dom = 'frtipB',
               buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"chrDirTable",sep="_"))),
               
-              bPaginate = FALSE
+              bPaginate = FALSE,referRender=TRUE
             ),
             selection = list(mode = "single"),
             filter = "top"
@@ -640,8 +768,8 @@ function(input, output, session) {
   output$goTable = DT::renderDataTable({
     id = input$expTable_row_last_clicked
     comparisonID = v$comparisonRow
-    if (!is.null(id) & !is.null(comparisonID)){
-      terms <- paste0("data/", getAccession(), "/", getAccession(), "_goterms_",comparisonID,".txt")
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(input$threshold)){
+      terms <- paste0("data/", getAccession(), "/", getAccession(), "_goterms_",comparisonID,input$threshold,".txt")
       if(file.size(terms)<5){
         terms<-as.data.frame("No significant GO Terms")
         colnames(terms)=""
@@ -658,6 +786,7 @@ function(input, output, session) {
         terms[, 4:5] <-
         signif(terms[,4:5], digits = 3)
         terms[,5]<-terms[,5]*100
+        colnames(terms)[5] <- "Percentage Cover"
          terms <-
             datatable(
             cbind(' ' = '&oplus;', terms),escape = FALSE,
@@ -673,7 +802,7 @@ function(input, output, session) {
                          bInfo = FALSE,
                          dom = 'frtipB',
                          buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"GOTerms",sep="_"))),
-                         bPaginate = FALSE
+                         bPaginate = FALSE,referRender=TRUE
             ),
             callback = JS("
                 table.column(1).nodes().to$().css({cursor: 'pointer'});
@@ -706,8 +835,8 @@ function(input, output, session) {
   output$goReducedTable = DT::renderDataTable({
     id = input$expTable_row_last_clicked
     comparisonID = v$comparisonRow
-    if (!is.null(id) & !is.null(comparisonID)){
-      terms <- paste0("data/", getAccession(), "/", getAccession(), "_goterms_reduced_",comparisonID,".txt")
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(input$threshold)){
+      terms <- paste0("data/", getAccession(), "/", getAccession(), "_goterms_reduced_",comparisonID,input$threshold,".txt")
       if(file.size(terms)<5){
         terms<-as.data.frame("No significant GO Terms")
         colnames(terms)=""
@@ -739,7 +868,7 @@ function(input, output, session) {
                            bInfo = FALSE,
                            dom = 'frtipB',
                            buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"ReducedGOTerms",sep="_"))),
-                           bPaginate = FALSE
+                           bPaginate = FALSE,referRender=TRUE
             ),
             callback = JS("
                 table.column(1).nodes().to$().css({cursor: 'pointer'});
@@ -774,9 +903,10 @@ function(input, output, session) {
   output$goMDS = renderUI({
     id = input$expTable_row_last_clicked
     comparisonID = v$comparisonRow
-    if (!is.null(id) & !is.null(comparisonID)){
-      go.mds <- paste0("plots/", getAccession(), "/plot",comparisonID,"_html/","GO.MDS_html.html")
-      go.mds <-
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(input$threshold)){
+      go.mds <- paste0("plots/", getAccession(), "/plot",comparisonID,input$threshold,"_html/","GO.MDS_html.html")
+   		if(file.info(paste0("www/",go.mds))$size != 0){
+        go.mds <-
         tags$iframe(
           seamless = "seamless",
           src = go.mds,
@@ -786,6 +916,11 @@ function(input, output, session) {
           frameBorder = 0
         )
       go.mds
+      } else{
+        h5("GO MDS not available",style="color:red")
+        
+      }
+      
     }
   })
   
@@ -794,8 +929,8 @@ function(input, output, session) {
   output$mimicTable = DT::renderDataTable({
     id = input$expTable_row_last_clicked
     comparisonID = v$comparisonRow
-    if (!is.null(id) & !is.null(comparisonID)){
-      mimic <-paste0("data/", getAccession(), "/", getAccession(), "_drugsMimic_",comparisonID,".txt")
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(input$threshold)){
+      mimic <-paste0("data/", getAccession(), "/", getAccession(), "_drugsMimic_",comparisonID,input$threshold,".txt")
       if(file.size(mimic)<5){
         mimic<-as.data.frame("No significant drugs")
         colnames(mimic)=""
@@ -809,7 +944,7 @@ function(input, output, session) {
         comparison<-comparisonTable()[v$comparisonRow,]
         comparison<-paste(comparison["Numerator"],"vs",comparison["Denominator"],sep="_")
         mimic <-read.delim(mimic)
-        mimic <-read.delim(paste0("data/", getAccession(), "/", getAccession(), "_drugsMimic_",comparisonID,".txt"))
+        mimic <-read.delim(paste0("data/", getAccession(), "/", getAccession(), "_drugsMimic_",comparisonID,input$threshold,".txt"))
         mimic <-
           datatable(
             cbind(' ' = '&oplus;', mimic),escape = FALSE,
@@ -825,7 +960,7 @@ function(input, output, session) {
                            bInfo = FALSE,
                            dom = 'frtipB',
                            buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"MimicDrugs",sep="_"))),
-                           bPaginate = FALSE
+                           bPaginate = FALSE,referRender=TRUE
             ),
             callback = JS("
                   table.column(1).nodes().to$().css({cursor: 'pointer'});
@@ -858,8 +993,8 @@ function(input, output, session) {
   output$reverseTable = DT::renderDataTable({
     id = input$expTable_row_last_clicked
     comparisonID = v$comparisonRow
-    if (!is.null(id) & !is.null(comparisonID)){
-      reverse <-paste0("data/", getAccession(), "/", getAccession(), "_drugsReverse_",comparisonID,".txt")
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(input$threshold)){
+      reverse <-paste0("data/", getAccession(), "/", getAccession(), "_drugsReverse_",comparisonID,input$threshold,".txt")
       if(file.size(reverse)<5){
         reverse<-as.data.frame("No significant drugs")
         colnames(reverse)=""
@@ -873,7 +1008,7 @@ function(input, output, session) {
         comparison<-comparisonTable()[v$comparisonRow,]
         comparison<-paste(comparison["Numerator"],"vs",comparison["Denominator"],sep="_")
         reverse <-read.delim(reverse)
-        reverse <-read.delim(paste0("data/", getAccession(), "/", getAccession(), "_drugsReverse_",comparisonID,".txt"))
+        reverse <-read.delim(paste0("data/", getAccession(), "/", getAccession(), "_drugsReverse_",comparisonID,input$threshold,".txt"))
         reverse <-
           datatable(
             cbind(' ' = '&oplus;', reverse),escape = FALSE,
@@ -889,7 +1024,7 @@ function(input, output, session) {
                            bInfo = FALSE,
                            dom = 'frtipB',
                            buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"ReverseDrugs",sep="_"))),
-                           bPaginate = FALSE
+                           bPaginate = FALSE,referRender=TRUE
             ),
             callback = JS("
                   table.column(1).nodes().to$().css({cursor: 'pointer'});
@@ -934,8 +1069,8 @@ function(input, output, session) {
           rownames = F,
           options = list(bInfo = FALSE,dom = 'rti')
         )
-    } else if (!is.null(id) & !is.null(comparisonID)){
-      TFs <- paste0("data/", getAccession(), "/", getAccession(), "_TFs_",comparisonID,".txt")
+    } else if (!is.null(id) & !is.null(comparisonID) & !is.null(input$threshold)){
+      TFs <- paste0("data/", getAccession(), "/", getAccession(), "_TFs_",comparisonID,input$threshold,".txt")
       
       if(file.size(TFs)<5 | !file.exists(TFs)){
         TFs<-as.data.frame("No significant TFs")
@@ -950,7 +1085,7 @@ function(input, output, session) {
         comparison<-comparisonTable()[v$comparisonRow,]
         comparison<-paste(comparison["Numerator"],"vs",comparison["Denominator"],sep="_")
         TFs <-
-          read.delim(paste0("data/", getAccession(), "/", getAccession(), "_TFs_",comparisonID,".txt"))[, c(-1,-8)]
+          read.delim(paste0("data/", getAccession(), "/", getAccession(), "_TFs_",comparisonID,input$threshold,".txt"))[, c(-1,-8)]
         TFs[,7] <- gsub(";"," ",TFs[,7])
         TFs<-TFs[ order(TFs[,2],decreasing=T),]
         TFs <-
@@ -967,8 +1102,8 @@ function(input, output, session) {
                            lengthChange = FALSE,
                            bInfo = FALSE,
                            dom = 'frtipB',
-                           buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"TFs",sep="_"))),
-                           bPaginate = FALSE
+                           buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,input$threshold,"_TFs",sep="_"))),
+                           bPaginate = FALSE,referRender=TRUE
             ),
             callback = JS("
                   table.column(1).nodes().to$().css({cursor: 'pointer'});
@@ -1005,6 +1140,7 @@ function(input, output, session) {
       comparison<-comparisonTable()[v$comparisonRow,]
       comparison<-paste(comparison["Numerator"],"vs",comparison["Denominator"],sep="_")
       subnetworkTable <-getSubnetworkTable()
+	  colnames(subnetworkTable)[4:5] <- c("P-Value","Top GO Term")
       
       subnetworkTable <-
         datatable(
@@ -1014,13 +1150,14 @@ function(input, output, session) {
             pageLength = 50,
             scrollY = "500px",
             lengthChange = FALSE,
+            order = list(3, 'asc'),
             bInfo = FALSE,
             dom = 'frtipB',
             buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"subnetworks",sep="_"))),
-            bPaginate = FALSE
+            bPaginate = FALSE,referRender=TRUE
           ),
           selection = list(mode = "single"),
-          filter = "top",callback = JS("table.on('click.dt', 'td', function() {
+          filter = list(position = 'top', clear = FALSE),callback = JS("table.on('click.dt', 'td', function() {
             var row_=table.cell(this).index().row;
             var col=table.cell(this).index().column;
             var rnd= Math.random();
@@ -1028,7 +1165,7 @@ function(input, output, session) {
            Shiny.onInputChange('subRows',data );
     });")
         )
-      subnetworkTable <-formatSignif(subnetworkTable, columns = 3, digits = 3)
+      subnetworkTable <-formatSignif(subnetworkTable, columns = 4, digits = 3)
       subnetworkTable
     }else {
       makeNullTable()
@@ -1043,7 +1180,7 @@ function(input, output, session) {
         div(h4("Subnetwork:",h4("Click on a row in the table to select a subnetwork to visualise",style="color:red")))
       } else{
         data<-getSubnetworkTable()
-        div(h4("Subnetwork:"),h5("Subnetwork No. :",input$subnetworkTable_row_last_clicked,HTML("<br>"),"Function:",data[input$subnetworkTable_row_last_clicked,4]))
+        div(h4("Subnetwork:"),h5("Subnetwork No. :",input$subnetworkTable_row_last_clicked,HTML("<br>"),"Function:",data[input$subnetworkTable_row_last_clicked,5]))
       }
       
     }
@@ -1054,19 +1191,24 @@ function(input, output, session) {
   #create the comparison info div
   output$compareInfo<-renderUI({
     if(input$tabset=="response" & input$toptabset=="comparisons" & !is.null(v$comparisonRow)){
-      if(is.null(v$simSummaryRow)){
-        div(h4("Compare:",h4("Select another experiment to see the gene overlap",style="color:red")))
-      } else{
-        rowID = input$similaritySummary_row_last_clicked
-        ID = similaritySummary()[rowID,"ID"]
-        accession = gsub("(.*)_.*", "\\1",ID)
-        comparison = similaritySummary()[rowID,"Comparison"]
-        div(h4("Compare:"),h5("Experiment. :",accession,HTML("<br>"),"Comparison:",comparison))
+      print(input$tabset)
+      if (input$responseType=="Pairwise"){
+        if(is.null(v$simSummaryRow)){
+          div(h4("Compare:",h4("Select another experiment to see the gene overlap",style="color:red")))
+        } else{
+          rowID = input$similaritySummary_row_last_clicked
+          ID = similaritySummary()[rowID,"ID"]
+          accession = gsub("(.*)_.*", "\\1",ID)
+          comparison = similaritySummary()[rowID,"Comparison"]
+          div(h4("Compare:"),h5("Experiment. :",accession,HTML("<br>"),"Comparison:",comparison))
+        }
+      } else {
+        if(is.null(v$similaritySummaryMultiRow)){
+          div(h4("Select other experiments to calculate consensus signatures",style="color:red"))
+        }
+        
       }
-      
     }
-    
-    
   })
 
   
@@ -1082,6 +1224,15 @@ function(input, output, session) {
         getAccession(),
         "_networks_",comparisonID,".rdata"
       ))
+      networks.string<-networks
+      load(paste0(
+        "data/",
+        getAccession(),
+        "/",
+        getAccession(),
+        "_biogridnetworks_",comparisonID,".rdata"
+      ))
+      networks <- c(networks.string,networks)
       maxValue <- signif(max(abs(unlist(sapply(networks,function(x) as.numeric(levels(x$x$nodes$title)))))),2)
       if(!file.exists(paste0("www/legend/tempNode",maxValue,".png"))){
       colfunc <- colorRampPalette(c("green", "white","red"))
@@ -1247,10 +1398,10 @@ function(input, output, session) {
             bInfo = FALSE,
             order = list(0, 'desc'),
             buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"similarity",sep="_"))),
-            dom = 'frtipB'
+            dom = 'frtipB',referRender=TRUE
           ),
           selection = list(mode = "single"),
-          filter = "top",callback = JS("table.on('click.dt', 'td', function() {
+          filter = list(position = 'top', clear = FALSE, plain=TRUE),callback = JS("table.on('click.dt', 'td', function() {
               var row_=table.cell(this).index().row;
               var col=table.cell(this).index().column;
               var rnd= Math.random();
@@ -1267,6 +1418,725 @@ function(input, output, session) {
         makeNullTable()
       }
   })
+  
+  #out the similarity summary
+  output$similaritySummaryMulti = renderDataTable({
+    id = input$expTable_row_last_clicked
+    comparisonID = v$comparisonRow
+    if (!is.null(id) & !is.null(comparisonID)){
+      comparison<-comparisonTable()[v$comparisonRow,]
+      comparison<-paste(comparison["Numerator"],"vs",comparison["Denominator"],sep="_")
+      dt <- similaritySummary()
+      
+      maxVal<-max(abs(dt[,1:4]),na.rm = T) + 0.001
+      minVal<- -maxVal
+      breaksList = seq(minVal, maxVal, by = 0.001)
+      colfunc <- colorRampPalette(c("green", "white","red"))
+      map <- makecmap(dt[,1],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      colours<-  cmap(dt[,1], map = map)
+      style.jacc <- styleEqual(dt[,1], colours)
+      map <- makecmap(dt[,2],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      colours<-  cmap(dt[,2], map = map)
+      style.cosine <- styleEqual(dt[,2], colours)
+      map <- makecmap(dt[,3],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      colours<-  cmap(dt[,3], map = map)
+      style.sigjacc <- styleEqual(dt[,3], colours)
+      map <- makecmap(dt[,4],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      colours<-  cmap(dt[,4], map = map)
+      style.chrDir <- styleEqual(dt[,4], colours)
+      
+      dt<-datatable(
+        dt,
+        rownames = F,
+        extensions = c('Scroller',"Buttons","Select"),
+        options = list(
+          scrollY = 300,
+          scrollX = 500,
+          scroller = TRUE,
+          pageLength = 50,
+          lengthChange = TRUE,
+          bInfo = FALSE,
+          order = list(0, 'desc'),
+          buttons = list('copy',list(extend='csv',filename=paste(getAccession(),comparison,"similarity",sep="_"))),
+          dom = 'frtipB',referRender=TRUE
+        ),
+        selection = list(mode = "multiple"),
+        filter = list(position = 'top', clear = FALSE, plain=TRUE),callback = JS("table.on('click.dt', 'td', function() {
+              var row_=table.cell(this).index().row;
+              var col=table.cell(this).index().column;
+              var rnd= Math.random();
+              var data = [row_, col, rnd];
+             Shiny.onInputChange('similaritySummaryMultiRow',data );
+      });
+      table.on('click.dt', 'tr', function() {
+        if ($(this).hasClass('selected'))  {
+        $(this).toggleClass('row_selected');  
+      } else if(table.$('tr.selected').length >5){
+        $(this).toggleClass('selected');
+        }
+    });")
+      )
+      dt <- formatStyle(dt,1, backgroundColor = style.jacc)
+      dt <- formatStyle(dt,2, backgroundColor = style.cosine)
+      dt <- formatStyle(dt,3, backgroundColor = style.sigjacc)
+      dt <- formatStyle(dt,4, backgroundColor = style.chrDir)
+      dt
+    }else {
+      makeNullTable()
+    }
+  })
+  
+ 
+  rankProductTable <- reactive({ 
+  id = getAccession()
+  comparisonID = v$comparisonRow
+  if (!is.null(id) & !is.null(comparisonID) & !is.null(v$similaritySummaryMultiRow)){
+    print("hello")
+    IDs = as.character(similaritySummary()[input$similaritySummaryMulti_rows_selected,"ID"])
+    IDs <- c(paste(id,comparisonID,sep="_"),IDs)
+    fc <- as.data.frame(getFoldChangeSignatures(IDs))
+    
+    fc[,2:ncol(fc)] <- signif(fc[,2:ncol(fc)], digits = 3)
+    
+    fc <- fc[apply(fc[,-1],1,function(x) length(which(is.na(x)))<(length(x)*0.5)),]
+    
+    rankProd <- RankProducts(data = fc[,-1],cl = rep(as.factor(1),ncol(fc)-1))$pfp[,2:1]
+    print(head(rankProd))
+    colnames(rankProd) <- c("UpRegulated PFP","DownRegulated PFP")
+    rankProd[, 1:2] <- signif(rankProd[, 1:2], digits = 3)
+    fc <- cbind(fc,rankProd)
+    fc
+  }
+    })
+  
+  
+  output$sharedFC = renderDataTable({
+    id = getAccession()
+    comparisonID = v$comparisonRow
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(v$similaritySummaryMultiRow)){
+      
+      shinyjs::hide("sharedFC")
+      shinyjs::hide("consensusPathway")
+      shinyjs::show("loadingTable")
+
+      
+      fc <- rankProductTable()
+      
+      maxVal<-max(abs(fc[,c(-1,-ncol(fc),-ncol(fc)-1)]),na.rm = T) + 0.001
+      minVal<- -maxVal
+      breaksList = seq(minVal, maxVal,length.out = 100)
+      colfunc <- colorRampPalette(c("green", "white","red"))
+      map <- makecmap(fc[,-1],n = 3,breaks = breaksList,symm = T,colFn = colfunc)
+      values <- unique(unlist(c(fc[,-1])))
+      colours <-  cmap(values, map = map)
+      style <- styleEqual(values, colours)
+      
+      
+
+
+      dt<-datatable(
+        fc,
+        rownames = F,
+        extensions = 'Scroller',
+        caption = tags$caption(
+          style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Fold Changes")),
+        options = list(
+          scrollY = 300,
+          scrollX = 500,
+          scroller = FALSE,
+          pageLength = 50,
+          lengthChange = FALSE,
+          bInfo = FALSE,
+          buttons = c('copy', 'csv'),dom = 'frtipB',
+          order = list(ncol(fc)-1, 'asc'),
+          deferRender=TRUE
+        ),
+        selection = list(mode = "single"),
+        filter = list(position = 'top', clear = FALSE)
+        ,escape=F)
+      #dt <- formatStyle(dt,2:ncol(fc)-2, backgroundColor = style)
+      shinyjs::hide("loadingTable")
+      shinyjs::show("sharedFC")
+      shinyjs::show("consensusPathway")
+      
+    
+    dt
+    }
+    
+  })
+  
+  output$sharedChrDir = renderDataTable({
+    id = getAccession()
+    comparisonID = v$comparisonRow
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(v$similaritySummaryMultiRow)){
+      
+      res <- getChrDirSigs()
+      
+      if(is.na(res)){
+        dt<-as.data.frame("No characteristic direction signatures available")
+        colnames(dt)=""
+        dt <-
+          datatable(
+            dt,
+            rownames = F,
+            options = list(bInfo = FALSE,dom = 'rti')) %>% formatStyle(columns = 1,color = 'red')
+        
+      } else {
+  
+        dt<-datatable(
+          res,
+          rownames = F,
+          caption = tags$caption(
+            style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Characteristic Direction Signatures")),
+          extensions = 'Scroller',
+          options = list(
+            scrollY = 300,
+            scrollX = 500,
+            scroller = TRUE,
+            pageLength = 50,
+            lengthChange = TRUE,
+            bInfo = FALSE,
+            buttons = c('copy', 'csv'),referRender=TRUE
+          ),
+          selection = list(mode = "single"),
+          filter = list(position = 'top', clear = FALSE)
+          ,escape=F)
+        
+        backgroundColor = styleEqual(c(0, 1,-1), c('white', 'red', 'green'))
+        dt <- formatStyle(dt,1:ncol(res), backgroundColor = backgroundColor)
+      }
+        
+      dt
+    }
+    
+  })
+  
+  output$sharedSigs = renderDataTable({
+    id = getAccession()
+    comparisonID = v$comparisonRow
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(v$similaritySummaryMultiRow)){
+      
+      res <- getSigs()
+      
+      if(is.na(res)){
+        dt<-as.data.frame("No differential expression signatures available")
+        colnames(dt)=""
+        dt <-
+          datatable(
+            dt,
+            rownames = F,
+            options = list(bInfo = FALSE,dom = 'rti')) %>% formatStyle(columns = 1,color = 'red')
+        
+      } else{
+        dt<-datatable(
+          res,
+          rownames = F,
+          caption = tags$caption(
+            style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Differentially Expressed Genes")),
+          extensions = 'Scroller',
+          options = list(
+            scrollY = 300,
+            scrollX = 500,
+            scroller = TRUE,
+            pageLength = 50,
+            lengthChange = TRUE,
+            bInfo = FALSE,
+            buttons = c('copy', 'csv'),referRender=TRUE
+          ),
+          selection = list(mode = "single"),
+          filter = list(position = 'top', clear = FALSE)
+          ,escape=F)
+        
+        backgroundColor = styleEqual(c(0, 1,-1), c('white', 'red', 'green'))
+        dt <- formatStyle(dt,1:ncol(res), backgroundColor = backgroundColor)
+      }
+        
+        dt
+    }
+    
+  })
+  
+  
+  getconsensusPathwayTable <- eventReactive(input$pathwaySubmit, {
+    
+    id = getAccession()
+    comparisonID = v$comparisonRow
+    
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(v$similaritySummaryMultiRow)){
+    
+      print("disabling")
+      shinyjs::disable("pathwaySubmit")
+      shinyjs::show("hiddenLoad")
+      shinyjs::hide("consensusPathway")
+      plotReady$ok <- FALSE
+      
+    
+      print(input$thresholdSlider)
+      threshold <- input$thresholdSlider
+      database <- input$databaseSelect
+      rp <- rankProductTable()
+      genes <- na.omit(c(rp[rp[,ncol(rp)]<=threshold,1],rp[rp[,ncol(rp)-1]<=threshold,1]))
+      
+      if(length(genes)==0){
+        plotReady$ok <- TRUE
+        shinyjs::hide("hiddenLoad")
+        shinyjs::show("consensusPathway")
+        return(NULL)
+      }
+      
+      if(length(genes)>5000){
+        plotReady$ok <- TRUE
+        shinyjs::hide("hiddenLoad")
+        shinyjs::show("consensusPathway")
+        return(tooLargeInputError())
+      }
+      
+      pathways <- try(enrichr(genes,database)[[1]])
+      if(is(pathways, "try-error") || nrow(pathways) == 0) {
+        plotReady$ok <- TRUE
+        shinyjs::hide("hiddenLoad")
+        shinyjs::show("consensusPathway")
+        return(NULL)
+      }
+      
+      pathways <-pathways[,c(-3,-5,-6)]
+      pathways[,3:5] <- signif(pathways[,3:5], digits = 3)
+      pathways[,6] <- gsub(";"," ",pathways[,6])
+      
+      plotReady$ok <- TRUE
+      shinyjs::hide("hiddenLoad")
+      shinyjs::show("consensusPathway")
+      pathways
+    }
+  })
+    
+    getconsensusPathwayTableChrDir <- eventReactive(input$pathwaySubmitChrDir, {
+      
+      id = getAccession()
+      comparisonID = v$comparisonRow
+      
+      if (!is.null(id) & !is.null(comparisonID) & !is.null(v$similaritySummaryMultiRow)){
+      
+      print("disablingChrDirButton")
+      shinyjs::disable("pathwaySubmitChrDir")
+      shinyjs::show("chrDirPathwayLoad")
+      shinyjs::hide("consensusPathwayChrDir")
+      plotReady$chrDir <- FALSE
+      
+      print("hello")
+      print(input$voteSlider)
+      threshold <- input$voteSlider
+      database <- input$databaseSelectChrDir
+      chrDirTable <- getChrDirSigs()
+      genes <- as.character(na.omit(chrDirTable[ apply(chrDirTable[,-ncol(chrDirTable)],1,function(x) length(which(x==1))>=threshold | length(which(x==-1))>=threshold),ncol(chrDirTable)]))
+      print(head(genes))
+
+      if(length(genes)==0){
+        plotReady$chrDir <- TRUE
+        # shinyjs::hide("hiddenLoadChrDir")
+        # shinyjs::show("consensusPathwayChrDir")
+        shinyjs::show("pathwaySubmitChrDir")
+        return(NULL)
+      }
+      
+      if(length(genes)>5000){
+        plotReady$chrDir <- TRUE
+        # shinyjs::hide("hiddenLoadChrDir")
+        # shinyjs::show("consensusPathwayChrDir")
+        shinyjs::show("pathwaySubmitChrDir")
+        return(tooLargeInputError())
+      }
+      
+      pathways <- try(enrichr(genes,database)[[1]])
+      if(is(pathways, "try-error")  || nrow(pathways) == 0 ) {
+        plotReady$chrDir <- TRUE
+        shinyjs::hide("hiddenLoadChrDir")
+        shinyjs::show("consensusPathwayChrDir")
+        return(NULL)
+      }
+      
+      pathways <-pathways[,c(-3,-5,-6)]
+      pathways[,3:5] <- signif(pathways[,3:5], digits = 3)
+      pathways[,6] <- gsub(";"," ",pathways[,6])
+
+      plotReady$chrDir <- TRUE
+      #shinyjs::hide("chrDirPathwayLoad")
+      shinyjs::show("pathwaySubmitChrDir")
+      pathways
+      }
+  })
+    
+  getconsensusPathwayTableSig <- eventReactive(input$pathwaySubmitSig, {
+    
+    id = getAccession()
+    comparisonID = v$comparisonRow
+    
+    if (!is.null(id) & !is.null(comparisonID) & !is.null(v$similaritySummaryMultiRow)){
+      
+      print("disablingSigButton")
+      shinyjs::disable("pathwaySubmitSig")
+      shinyjs::show("sigPathwayLoad")
+      shinyjs::hide("consensusPathwaySig")
+      plotReady$sig <- FALSE
+      
+      print("hello")
+      print(input$voteSliderSig)
+      threshold <- input$voteSliderSig
+      database <- input$databaseSelectSig
+      sigTable <- getSigs()
+      genes <- as.character(sigTable[ apply(sigTable[,-ncol(sigTable)],1,function(x) length(which(x==1))>=threshold | length(which(x==-1))>=threshold),ncol(sigTable)])
+      print(genes)
+      
+      if(length(genes)==0){
+        plotReady$sig <- TRUE
+        shinyjs::hide("hiddenLoad")
+        shinyjs::show("consensusPathway")
+        return(NULL)
+      }
+      
+      if(length(genes)>5000){
+        plotReady$sig <- TRUE
+        shinyjs::hide("hiddenLoad")
+        shinyjs::show("consensusPathway")
+        return(tooLargeInputError())
+      }
+      
+      pathways <- try(enrichr(genes,database)[[1]])
+      if(is(pathways, "try-error")  || nrow(pathways) == 0) {
+        plotReady$sig <- TRUE
+        shinyjs::hide("hiddenLoad")
+        shinyjs::show("consensusPathway")
+        return(NULL)
+      }
+      
+      pathways <-pathways[,c(-3,-5,-6)]
+      pathways[,3:5] <- signif(pathways[,3:5], digits = 3)
+      pathways[,6] <- gsub(";"," ",pathways[,6])
+      
+      plotReady$sig <- TRUE
+      #shinyjs::hide("chrDirPathwayLoad")
+      shinyjs::show("pathwaySubmitSig")
+      pathways
+    }
+    })
+  
+  
+    output$consensusPathway = renderDataTable({
+      
+      #getSlider Value
+      if(plotReady$ok){
+        shinyjs::enable("pathwaySubmit")
+        terms <- getconsensusPathwayTable()
+        shinyjs::hide("hiddenLoad")
+        
+        if (inherits(terms,"tooLargeInputError")){
+          
+          terms<-as.data.frame("Gene list length too large. Increase the threshold")
+          colnames(terms)=""
+          terms <-
+            datatable(
+              terms,
+              rownames = F,
+              options = list(bInfo = FALSE,dom = 'rti')
+            ) %>% formatStyle(columns = 1,color = 'red')
+        } else if (!is.null(terms)){
+          
+          terms <-
+            datatable(
+              cbind(' ' = '&oplus;', terms),escape = FALSE,
+              rownames = F,
+              caption = tags$caption(
+                style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Consensus Pathways")),
+              options = list(lengthMenu = c(10,50,100,nrow(terms)), order = list(3, 'asc'),
+                             columnDefs = list(
+                               list(visible = FALSE, targets = 6),
+                               list(orderable = FALSE, className = 'details-control', targets = 0)
+                             ),
+                             pageLength = 50,
+                             scrollY = "500px",
+                             lengthChange = FALSE,
+                             bInfo = FALSE,
+                             dom = 'frtipB',
+                             buttons = list('copy',list(extend='csv',filename="enrichR_Results.txt")),
+                             bPaginate = FALSE, referRender=TRUE
+              ),
+              callback = JS("
+                  table.column(1).nodes().to$().css({cursor: 'pointer'});
+                  var format = function(d) {
+                  return '<div style=\"background-color:#eee; padding: .5em;\">' +
+                  '<b>'+\"Genes: \" + '</b>'+ d[6] +  '</div>';
+                  };
+                  table.on('click', 'td.details-control', function() {
+                  var td = $(this), row = table.row(td.closest('tr'));
+                  if (row.child.isShown()) {
+                  row.child.hide();
+                  td.html('&oplus;');
+                  } else {
+                  row.child(format(row.data())).show();
+                  td.html('&CircleMinus;');
+                  }
+                  });"
+              ),
+              selection = list(mode = "single")
+              #          filter = "top"
+            )
+        } else{
+          terms<-as.data.frame("No significant pathways")
+          colnames(terms)=""
+          terms <-
+            datatable(
+              terms,
+              rownames = F,
+              options = list(bInfo = FALSE,dom = 'rti')
+            ) %>% formatStyle(columns = 1,color = 'red')
+        }
+      shinyjs::show("consensusPathway")
+      terms
+        
+        
+      }
+    })
+    
+    output$consensusPathwayChrDir = renderDataTable({
+      
+      #getSlider Value
+      if(plotReady$chrDir){
+        terms <- getconsensusPathwayTableChrDir()
+        shinyjs::enable("pathwaySubmitChrDir")
+        shinyjs::hide("chrDirPathwayLoad")
+
+        if (inherits(terms,"tooLargeInputError")){
+          
+          terms<-as.data.frame("Gene list length too large. Increase the threshold")
+          colnames(terms)=""
+          terms <-
+            datatable(
+              terms,
+              rownames = F,
+              options = list(bInfo = FALSE,dom = 'rti')
+            ) %>% formatStyle(columns = 1,color = 'red')
+        } else if (!is.null(terms)){
+          
+          terms <-
+            datatable(
+              cbind(' ' = '&oplus;', terms),escape = FALSE,
+              rownames = F,
+              caption = tags$caption(
+                style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Consensus Pathways")),
+              options = list(lengthMenu = c(10,50,100,nrow(terms)), order = list(3, 'asc'),
+                             columnDefs = list(
+                               list(visible = FALSE, targets = 6),
+                               list(orderable = FALSE, className = 'details-control', targets = 0)
+                             ),
+                             pageLength = 50,
+                             scrollY = "500px",
+                             lengthChange = FALSE,
+                             bInfo = FALSE,
+                             dom = 'frtipB',
+                             buttons = list('copy',list(extend='csv',filename="enrichR_Results.txt")),
+                             bPaginate = FALSE, referRender=TRUE
+              ),
+              callback = JS("
+                            table.column(1).nodes().to$().css({cursor: 'pointer'});
+                            var format = function(d) {
+                            return '<div style=\"background-color:#eee; padding: .5em;\">' +
+                            '<b>'+\"Genes: \" + '</b>'+ d[6] +  '</div>';
+                  };
+                  table.on('click', 'td.details-control', function() {
+                  var td = $(this), row = table.row(td.closest('tr'));
+                  if (row.child.isShown()) {
+                  row.child.hide();
+                  td.html('&oplus;');
+                  } else {
+                  row.child(format(row.data())).show();
+                  td.html('&CircleMinus;');
+                  }
+                  });"
+              ),
+              selection = list(mode = "single")
+              #          filter = "top"
+            )
+        } else{
+          terms<-as.data.frame("No significant pathways")
+          colnames(terms)=""
+          terms <-
+            datatable(
+              terms,
+              rownames = F,
+              options = list(bInfo = FALSE,dom = 'rti')
+            ) %>% formatStyle(columns = 1,color = 'red')
+        }
+        shinyjs::show("consensusPathwayChrDir")
+        terms
+        
+        
+      }
+    })
+    
+    output$consensusPathwaySig= renderDataTable({
+      
+      #getSlider Value
+      if(plotReady$sig){
+        terms <- getconsensusPathwayTableSig()
+        shinyjs::enable("pathwaySubmitSig")
+        shinyjs::hide("sigPathwayLoad")
+        if (inherits(terms,"tooLargeInputError")){
+          
+          terms<-as.data.frame("Gene list length too large. Increase the threshold")
+          colnames(terms)=""
+          terms <-
+            datatable(
+              terms,
+              rownames = F,
+              options = list(bInfo = FALSE,dom = 'rti')
+            ) %>% formatStyle(columns = 1,color = 'red')
+        } else if (!is.null(terms)){
+          
+          terms <-
+            datatable(
+              cbind(' ' = '&oplus;', terms),escape = FALSE,
+              rownames = F,
+              caption = tags$caption(
+                style = 'caption-side: centre; color: black;text-align: centre;', tags$b("Consensus Pathways")),
+              options = list(lengthMenu = c(10,50,100,nrow(terms)), order = list(3, 'asc'),
+                             columnDefs = list(
+                               list(visible = FALSE, targets = 6),
+                               list(orderable = FALSE, className = 'details-control', targets = 0)
+                             ),
+                             pageLength = 50,
+                             scrollY = "500px",
+                             lengthChange = FALSE,
+                             bInfo = FALSE,
+                             dom = 'frtipB',
+                             buttons = list('copy',list(extend='csv',filename="enrichR_Results.txt")),
+                             bPaginate = FALSE, referRender=TRUE
+              ),
+              callback = JS("
+                            table.column(1).nodes().to$().css({cursor: 'pointer'});
+                            var format = function(d) {
+                            return '<div style=\"background-color:#eee; padding: .5em;\">' +
+                            '<b>'+\"Genes: \" + '</b>'+ d[6] +  '</div>';
+                  };
+                  table.on('click', 'td.details-control', function() {
+                  var td = $(this), row = table.row(td.closest('tr'));
+                  if (row.child.isShown()) {
+                  row.child.hide();
+                  td.html('&oplus;');
+                  } else {
+                  row.child(format(row.data())).show();
+                  td.html('&CircleMinus;');
+                  }
+                  });"
+              ),
+              selection = list(mode = "single")
+              #          filter = "top"
+            )
+        } else{
+          terms<-as.data.frame("No significant pathways")
+          colnames(terms)=""
+          terms <-
+            datatable(
+              terms,
+              rownames = F,
+              options = list(bInfo = FALSE,dom = 'rti')
+            ) %>% formatStyle(columns = 1,color = 'red')
+        }
+        shinyjs::show("consensusPathwaySig")
+        terms
+        
+        
+      }
+    })
+  
+  
+  
+  #get GOTerms given an ID
+  getGOTerms <- function(ID) {
+    accession = gsub("(.*)_.*", "\\1",ID)
+    comparisonID = gsub(".*_(.*)", "\\1",ID) 
+    terms <- paste0("data/", accession, "/", accession, "_goterms_",comparisonID,".txt")
+  if(file.size(terms)<5){
+    return(as.data.frame(NA))
+  } else {
+    terms <- read.delim(terms)
+    return(terms)
+  }
+  }
+  
+  #get TFTerms given an ID
+  getTFs <- function(ID) {
+    accession = gsub("(.*)_.*", "\\1",ID)
+    comparisonID = gsub(".*_(.*)", "\\1",ID) 
+    tfs <- paste0("data/", accession, "/", accession, "_TFs_",comparisonID,".txt")
+    print(tfs)
+    if(file.size(tfs)<5){
+      return(as.data.frame(NA))
+    } else {
+      tfs <- read.delim(tfs)[, c(-1,-8)]
+      return(tfs)
+    }
+  }
+  
+  #get foldchanges given IDs
+  getFoldChangeSignatures <- function(IDs) {
+    accession = gsub("(.*)_.*", "\\1",IDs)
+    comparisonID = gsub(".*_(.*)", "\\1",IDs) 
+    fc <- foldChangeTable[,c("ID",IDs)]
+    fc <- fc[rowSums(fc[,-1])!=0,]
+  }
+  
+  #get chrdir sigs given an ID
+  getChrDirSigs <- reactive({
+    id = getAccession()
+    comparisonID = v$comparisonRow
+    IDs = as.character(similaritySummary()[input$similaritySummaryMulti_rows_selected,"ID"])
+    IDs <- c(paste(id,comparisonID,sep="_"),IDs)
+    accession = gsub("(.*)_.*", "\\1",IDs)
+    comparisonID = gsub(".*_(.*)", "\\1",IDs)
+    chrDirs <- chrDirsList[IDs]
+    columns <- as.data.frame(rbind_list(chrDirs))
+    if(ncol(columns)==0){
+      return(NA)
+    }
+    columns<-unique(unlist(columns[,1]))
+    res<-as.data.frame(t(do.call(rbind,lapply(chrDirs,function(x) ifelse(columns %in% x[x[,2]>0,1],1,ifelse(columns %in% x[x[,2]<0,1],-1,0))))))
+    res$Gene <- columns
+    res <- res[order(rowSums(abs(res[,-ncol(res)])),decreasing = T),]
+    
+    plotReady$chrDirCols <- ncol(res)-1
+    
+    return(res)
+    
+  })
+  
+  #get fc sigs given an ID
+  getSigs <- reactive({
+    id = getAccession()
+    comparisonID = v$comparisonRow
+    IDs = as.character(similaritySummary()[input$similaritySummaryMulti_rows_selected,"ID"])
+    IDs <- c(paste(id,comparisonID,sep="_"),IDs)
+    accession = gsub("(.*)_.*", "\\1",IDs)
+    comparisonID = gsub(".*_(.*)", "\\1",IDs)
+    up <- upSigs[IDs]
+    down <- downSigs[IDs]
+    columns<-unique(c(unlist(up),unlist(down)))
+    print(head(columns))
+    res<-as.data.frame(t(do.call(rbind,mapply(function(Up,Down) ifelse(columns %in% Up,1,ifelse(columns %in% Down,-1,0)),up,down,SIMPLIFY = F))))
+    print(head(res))
+    res$Gene <- columns
+    print(head(res))
+    if(nrow(res)==0){
+      return(NA)
+    }
+    
+  res <- res[order(rowSums(abs(res[,-ncol(res)])),decreasing = T),]
+
+	plotReady$sigCols <- ncol(res)-1
+    
+    return(res)
+    
+  })
+  
     
   #get the selected comparison fold change table
   getComparisonFoldChangeTable = reactive({
@@ -1341,6 +2211,8 @@ function(input, output, session) {
     map <- human2otherspecies[ human2otherspecies$species==species,]
    
     genes <- unique(map[ match(genes,map[,"queryGene"]),"humanGene"])
+    
+    print(head(genes))
     
     return(genes)
   }
@@ -1492,16 +2364,17 @@ function(input, output, session) {
   })
   
   #output the gene overlap
-  output$geneOverlap<- renderDataTable({ 
-    
-    venn <- makeVenn()
-    if(!is.null(venn)){
-      overlapTable <- datatable(venn[[1]],rownames = F,
-      options = list(scrollY = "400px",
-                     lengthChange = FALSE,
-                     bInfo = FALSE,searching = FALSE, paging =FALSE,buttons = c('copy', 'csv') ),
-      selection = list(mode = "single"))
-    }
+  output$geneOverlap<- renderDataTable({
+      if(!is.null(v$simSummaryRow)){
+        venn <- makeVenn()
+        if(!is.null(venn)){
+          overlapTable <- datatable(venn[[1]],rownames = F,
+          options = list(scrollY = "400px",
+                         lengthChange = FALSE,
+                         bInfo = FALSE,searching = FALSE, paging =FALSE,buttons = c('copy', 'csv') ),
+          selection = list(mode = "single"))
+        }
+      }
     })
   
   #output the gene overlap
@@ -1543,7 +2416,7 @@ function(input, output, session) {
     return(signedJaccard)
   }
   
-  #calculate signed jaccard similarity
+  #calculate signed jaccard similarity for differentially expressed genes
   signedJaccardSigCreate<-function(i,queryUp,queryDown,foldChangeListUp,foldChangeListDown,background){
     
     set1Up<-foldChangeListUp[[i]]
@@ -1562,7 +2435,7 @@ function(input, output, session) {
     return(signedJaccard(set1Up,set1Down,queryUp,queryDown))
   }
   
-  #calculate signed jaccard similarity
+  #calculate signed jaccard similarity for chrDir
   signedJaccardCreateChrDir<-function(i,queryUp,queryDown,chrDirs,background){
 
     if (is.na( chrDirs[i])){
@@ -1586,6 +2459,8 @@ function(input, output, session) {
   #similarity search button
   getJaccardSim <- eventReactive(input$sigSearch, {
     
+    shinyjs::disable("sigSearch")
+    
     upRegulated <- unlist(strsplit(input$UpRegulated,"[ \t\r\n]"))
     downRegulated <- unlist(strsplit(input$DownRegulated,"[ \t\r\n]"))
     background <- unlist(strsplit(input$Background,"[ \t\r\n]"))
@@ -1602,6 +2477,7 @@ function(input, output, session) {
     chrDirs <- sapply(seq_along(chrDirsList),signedJaccardCreateChrDir,upRegulated,downRegulated,chrDirsList,background)
     
     
+    
     sigJaccards <- data.frame(ID=names(upSigs),sigJaccard=sigJaccards,chrDir=chrDirs)
     sigJaccards$accessions <- gsub("(.*)_.*", "\\1",sigJaccards$ID)
     sigJaccards <- merge(sigJaccards,expTable,by.x="accessions",by.y="ID")
@@ -1613,6 +2489,10 @@ function(input, output, session) {
     
     sigJaccards <- tibble::add_column(sigJaccards, as.vector(scale(sigJaccards[,1])),.after = 2)
     sigJaccards <- tibble::add_column(sigJaccards, as.vector(scale(sigJaccards[,2])),.after = 3)
+    
+    shinyjs::enable("sigSearch")
+
+    sigJaccards
     
     
   })
@@ -1668,10 +2548,10 @@ function(input, output, session) {
           dom = 'frtB',
           lengthMenu = list( c(10, 20, -1), c(10, 20, "All")),
           order = list(0, 'desc'),
-          buttons = c("copy", "csv")
+          buttons = c("copy", "csv"),referRender=TRUE
         ),
         selection = list(mode = "single"),
-        filter = "top")
+        filter = list(position = 'top', clear = FALSE, plain=TRUE))
         dt <- formatStyle(dt,1, backgroundColor = style.sigjacc)
         dt <- formatStyle(dt,2, backgroundColor = style.chrDir)
         dt <- formatStyle(dt,3, backgroundColor = style.sigjaccZscore)
@@ -1817,13 +2697,19 @@ function(input, output, session) {
   
   
   #when the comparisons table changes reset the selected rows
-  v <- reactiveValues(comparisonRow = NULL, subnetworkRow=NULL, simSummaryRow=NULL)
+  v <- reactiveValues(comparisonRow = NULL, subnetworkRow=NULL, simSummaryRow=NULL,similaritySummaryMultiRow=NULL,thresholdPickerPval="_1.5_0.05",thesholdFC="_1.5")
   
   #reset the values when experiment changes
   observeEvent(input$expTable_row_last_clicked, {
     v$comparisonRow <- NULL
     v$subnetworkRow <- NULL
     v$simSummaryRow <- NULL
+    v$similaritySummaryMultiRow <- NULL
+    updateTabsetPanel(session, "activesubnet",selected = "Summary Table")
+    updateTabsetPanel(session, "sharedResponse",selected = "Summary")
+    updateTabsetPanel(session, "sharedResponseMulti",selected = "SummaryMulti")
+    
+    
   })
   
   #set values on click
@@ -1836,8 +2722,51 @@ function(input, output, session) {
   })
   
   observeEvent(input$simSummaryRows, {
-    v$simSummaryRow <- input$similaritySummary_row_last_clicked
+    v$simSummaryRow <- input$similaritySummary_rows_selected
   })
+  
+  observeEvent(input$similaritySummaryMultiRow, {
+    v$similaritySummaryMultiRow <- input$similaritySummaryMulti_rows_selected
+  })
+  
+  observeEvent(input$threshold, {
+    if(expTable[input$expTable_row_last_clicked,"foldChangeOnly"]==FALSE){
+      v$thresholdPickerPval <- input$threshold
+    } else {
+      v$thresholdPickerFC <- input$threshold
+    }
+    
+  })
+  
+  #geneSearch example button
+  observeEvent(input$geneSearchExample, {
+    updateTextInput(session,inputId = "GeneName",value = "DDIT3")
+  })
+  
+  #sig example button
+  observeEvent(input$loadSigExample, {
+    updateTextAreaInput(session,inputId = "UpRegulated",value = "STMN2\nABCB5\nTHBS4\nMMP13\nC21orf37\nEGFL6\nCOL16A1\nGPR158\nAK5\nAK5\nATP6V0D2\nALU2\nDIRAS2\nLOC101929504\nDNASE2B\nSTXBP5L\nLHX2\nPSIP1\nNYAP2\nCTNND2\nFNDC1\nEN1\nMIR31HG\nXLOC_006820\nFRMPD4\nLOC101929450\nFGFR2\nLPAR3\nCOL12A1\nLOC613266\nGLDC\nESYT3\nKIAA1549L\nNSG1\nLCTL\nTRIM67\nPPEF1\nDPP4\nLRRC8E\nIRX1\nCTHRC1\nTM4SF19\nESYT3\nKPNA7\nFRAS1\nCALCR\nCALHM3\nTOX3\nFAP\nDGKI\nPTPRD\nIGDCC4\nGLT8D2\nIGSF3\nC11orf87\nESPNL\nHEY1\nDCSTAMP\nGALNT5\nLOC101927619\nSATB2\nGJA1\nSLC9B2\nPLEKHG4B\nLINC00673\nHMSD\nGPR68\nCALCR\nPRSS12\nTHBS2\nSP6\nPLEKHA5\nUST\nSGMS2\nMMP9\nMYO1B\nFKBP7\nIGSF3\nSHC3\nXLOC_005452\nSPNS2\nCASC14\nLINC00605\nGNPTAB\nARMC4\nMMP11\nLAMP3\nLOC100132705\nPRMT8\nSRPX\nST8SIA1\nFERMT1\nCUBN\nTDRD3\nPPIC\nGFRA1\nCLEC4A\nRUNX2\nMAGED4B\nSRD5A1\nVAV2\nNKD2\nSCD5\nPRSS8\nFRMD6\nIL21R\nLINC01057\nTP53I3\nCD276\nARRDC4\nTPBG\nRBFOX2\nTRAF3IP2-AS1\nZNF815P\nTPMT\nATP6AP2\nAARS")
+    updateTextAreaInput(session,inputId = "DownRegulated",value = "RAPGEF1\nWDR74\nPRMT5\nPRKD2\nWASF2\nLOC102725378\nTSPAN14\nPEA15\nTNIP1\nMFNG\nRCSD1\nMGAT1\nCNPPD1\nPPP5C\nPECAM1\nABLIM3\nHSPB1\nPEA15\nSAMD1\nTM4SF1\nSYNPO\nPXN\nDSP\nFLT4\nAFAP1L1\nABCG1\nC10orf54\nDACH1\nNR1H2\nTSPAN14\nIQCA1\nFAM107A\nSLPI\nXLOC_010730\nSLC16A13\nLOC100128343\nIQCA1\nFBXO31\nGRAP\nTP53TG3C\nLYVE1\nPRR26\nKCNQ3\nXLOC_001496\nTNFRSF1B\nINHBB\nALU1\nC6orf25\nAQP10\nFFAR2\nTRBV28\nHBA2\nXLOC_014512\nHBA2\nCLEC1B\nPF4V1\nMMP25\nLOC102724484\nSMIM24\nTUBB1\nHSJ1167H4\nTTTY16\nLINC00570\nCMTM2\nCXCR2\nHBD\nGYPB\nSEC14L3\nFLJ46249\nCLEC1B\nCLEC1B\nGATA1\nPDZK1IP1\nNFE2\nXLOC_013489\nPF4\nXLOC_000346\nALAS2\nS100P\nHBQ1\nPPBP\nHBA2\nHBM\nHEMGN\nS100A12\nS100A12\nHBG1")
+  })
+  
+  plotReady <- reactiveValues(ok = TRUE,chrDir=TRUE,sig=TRUE,chrDirCols=1,sigCols=1)
+  
+  #call condition class
+  condition <- function(subclass, message, call = sys.call(-1), ...) {
+    structure(
+      class = c(subclass, "condition"),
+      list(message = message, call = call, ...)
+    )
+  }
+  
+  tooLargeInputError <- function() {
+    msg <- paste0("Too large input")
+    condition(c("tooLargeInputError", "error"),
+              message = msg, 
+              text = text
+    )
+  }
+  
   
   
 }

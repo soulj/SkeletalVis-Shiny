@@ -2,11 +2,11 @@ library(shiny)
 library(visNetwork)
 library(plotly)
 library(shinyBS)
+library(shinyjs)
 
 navbarPage(
   title = "SkeletalVis",
-  theme = "bootstrap.min.css",
-  
+  theme = "bootstrap.min.css",header = tags$head(useShinyjs()),
   tabPanel(
     title = "Home",
     icon = icon("home"),
@@ -17,7 +17,7 @@ navbarPage(
         h2(
           "Welcome to ",
           tags$b("SkeletalVis"),
-          ": a user friendly web application for exploration of skeletal disease related expression datasets."
+          ": a user friendly web application for exploration of skeletal biology related expression datasets."
         )
       ),
       div(
@@ -42,7 +42,7 @@ navbarPage(
           "SkeletalVis uses public microarray and RNA-Seq expression data from ArrayExpress and GEO"
         ),
         h3(
-          "These repositories are searched for skeletal disease experiments which are then consistently analysed"
+          "These repositories are searched for skeletal experiments which are then consistently analysed"
         )
       ),
       div(
@@ -88,6 +88,34 @@ navbarPage(
         uiOutput("subNetReminderText"),
         uiOutput("compareInfo"),
         uiOutput("sharedResponseReminderText"),
+        uiOutput("thresholdPicker"),
+        uiOutput("thresholdSlider"),
+        uiOutput("thresholdSliderHelp"),
+        bsPopover("thresholdSliderHelp",
+                  title = "Find Enriched Pathways",
+                  content = "Choose a PFR threshold, select an EnrichR database and click submit to find enriched pathways based on the consensus gene signature",
+                  placement = "bottom",
+                  trigger = "hover",
+                  options = NULL
+        ),
+        uiOutput("voteSlider"),
+        uiOutput("voteSliderHelp"),
+        bsPopover("voteSliderHelp",
+                  title = "Find Enriched Pathways",
+                  content = "Choose a vote count threshold, select an EnrichR database and click submit to find enriched pathways based on the consensus gene signature",
+                  placement = "bottom",
+                  trigger = "hover",
+                  options = NULL
+        ),
+        uiOutput("voteSliderSig"),
+        uiOutput("voteSliderSigHelp"),
+ bsPopover("voteSliderSigHelp",
+                  title = "Find Enriched Pathways",
+                  content = "Choose a vote count threshold, select an EnrichR database and click submit to find enriched pathways based on the consensus gene signature",
+                  placement = "bottom",
+                  trigger = "hover",
+                  options = NULL
+                ),
         width = 2
         
       ),
@@ -226,7 +254,7 @@ navbarPage(
                 uiOutput("TFHelp", style = "display:inline-block"),
                 bsPopover(
                   "TFHelp",
-                  title = "Differentially regulated pathways",
+                  title = "Upstream Transcription Factors",
                   content = "Table shows the significantly enriched (adjusted p-value ≤ 0.05) TFs <br> The differentially expressed genes regulated by each TF can be viewed by selecting the + symbol on the left of the table. <br> Table can be searched and sorted for a target gene/TF of interest",
                   placement = "bottom",
                   trigger = "hover",
@@ -247,7 +275,7 @@ navbarPage(
                     bsPopover(
                       "mimicDrugHelp",
                       title = "Mimic Drugs",
-                      content = "Table shows the drugs that give the most similar transcriptomic response <br> The drug name and predicted drug targets, differentially expressed genes that overlap with the drug pertubation, the percentage overlap are shown <br> Table can be searched and sorted for a target gene/TF of interest",
+                      content = "Table shows the drugs that give the most similar transcriptomic response <br> The drug name and predicted drug targets, differentially expressed genes that overlap with the drug pertubation, the percentage overlap are shown <br> Table can be searched and sorted for a target gene/drug of interest",
                       placement = "bottom",
                       trigger = "hover",
                       options = NULL
@@ -261,7 +289,7 @@ navbarPage(
                     bsPopover(
                       "reverseDrugHelp",
                       title = "Reverse Drugs",
-                      content = "Table shows the drugs that give the opposite transcriptomic response i.e could be used to reverse the experimental pertubation <br> The drug name and predicted drug targets, differentially expressed genes that overlap with the drug pertubation, the percentage overlap are shown <br> Table can be searched and sorted for a target gene/TF of interest",
+                      content = "Table shows the drugs that give the opposite transcriptomic response i.e could be used to reverse the experimental pertubation <br> The drug name and predicted drug targets, differentially expressed genes that overlap with the drug pertubation, the percentage overlap are shown <br> Table can be searched and sorted for a target gene/drug of interest",
                       placement = "bottom",
                       trigger = "hover",
                       options = NULL
@@ -310,35 +338,93 @@ navbarPage(
                 "Shared Response",
                 icon = icon("table"),
                 value = "response",
-                tabsetPanel(
-                  id = "sharedResponse",
+                tabsetPanel(id = "responseType",tabPanel("Pairwise",
+                            tabsetPanel(
+                              id = "sharedResponse",
+                              tabPanel(
+                                "Summary",
+                                div(h3("Shared Response Summary"), style = "display:inline-block"),
+                                uiOutput("responseHelp", style = "display:inline-block"),
+                                bsPopover(
+                                  "responseHelp",
+                                  title = "Response summary",
+                                  content = "Table shows the similarity of the loaded experiment to all the other experiments <br> Click on a row to select that experiment and view the overlapping genes in the comparison tab",
+                                  placement = "bottom",
+                                  trigger = "hover",
+                                  options = NULL
+                                ),
+                                DT::dataTableOutput("similaritySummary")
+                              ),
+                              tabPanel(
+                                "Gene Overlap",
+                                h4("FoldChange Overlap"),
+                                DT::dataTableOutput("geneOverlap"),
+                                h4("Significant Overlap"),
+                                DT::dataTableOutput("geneOverlapSig"),
+                                h4("Charecteristic Direction Overlap"),
+                                DT::dataTableOutput("geneOverlapChrDir")
+                              ),
+                              tabPanel("Cosine Plot", plotOutput("cosineSim")),
+                              tabPanel("Signed Jaccard Plot",  plotOutput("jaccardSim"))
+                            )),
+                            
+                             tabPanel("Multiple",tabsetPanel(
+                  id = "sharedResponseMulti",
                   tabPanel(
-                    "Summary",
+                    "Summary",value="SummaryMulti",
                     div(h3("Shared Response Summary"), style = "display:inline-block"),
-                    uiOutput("responseHelp", style = "display:inline-block"),
+                    uiOutput("responseHelpMulti", style = "display:inline-block"),
                     bsPopover(
-                      "responseHelp",
+                      "responseHelpMulti",
                       title = "Response summary",
-                      content = "Table shows the similarity of the loaded experiment to all the other experiments <br> Click on a row to select that experiment and view the overlapping genes in the comparison tab",
+                      content = "The table shows the similarity of the loaded experiment to all the other experiments <br> Click on one or more rows to select those experiments and view the overlapping differentially expressed genes in the comparison tabs",
                       placement = "bottom",
                       trigger = "hover",
                       options = NULL
                     ),
-                    DT::dataTableOutput("similaritySummary")
+                    DT::dataTableOutput("similaritySummaryMulti")
                   ),
-                  tabPanel(
-                    "Gene Overlap",
-                    h4("FoldChange Overlap"),
-                    DT::dataTableOutput("geneOverlap"),
-                    h4("Significant Overlap"),
-                    DT::dataTableOutput("geneOverlapSig"),
-                    h4("Charecteristic Direction Overlap"),
-                    DT::dataTableOutput("geneOverlapChrDir")
-                  ),
-                  tabPanel("Cosine Plot", plotOutput("cosineSim")),
-                  tabPanel("Signed Jaccard Plot",  plotOutput("jaccardSim"))
-                )
-              )
+                  tabPanel("Gene Overlap",value="multiGeneOverlap",
+                           uiOutput("geneOverlapHelp", style = "display:inline-block"),
+                           bsPopover(
+                             "geneOverlapHelp",
+                             title = "Fold change gene overlap",
+                             content = "The table shows the fold changes of the loaded experiment and selected experiments.<br> The rank product methods is used to calculate the probability of observing the rank of the fold change across the experiments (PFR)",
+                             placement = "bottom",
+                             trigger = "hover",
+                             options = NULL
+                           ),
+                           shinyjs::hidden(h3(id = "loadingTable", "Calculating RankProduct consensus")),
+                           DT::dataTableOutput("sharedFC"),
+                           shinyjs::hidden(h3(id = "hiddenLoad", "Searching for Enriched Pathways")),
+                           DT::dataTableOutput("consensusPathway")),
+                  
+                  tabPanel("ChrDir Overlap",
+                           uiOutput("chrDirOverlapHelp", style = "display:inline-block"),
+                           bsPopover(
+                             "chrDirOverlapHelp",
+                             title = "Characteristic Direction signature overlap",
+                             content = "The table shows the genes in the characteristic direction signatures of the loaded experiment and selected experiments.<br>",
+                             placement = "bottom",
+                             trigger = "hover",
+                             options = NULL
+                           ),
+                           DT::dataTableOutput("sharedChrDir"),shinyjs::hidden(h3(id = "chrDirPathwayLoad", "Searching for Enriched Pathways")),DT::dataTableOutput("consensusPathwayChrDir")),
+                  tabPanel("Sig Overlap",
+                           uiOutput("sigOverlapHelp", style = "display:inline-block"),
+                           bsPopover(
+                             "sigOverlapHelp",
+                             title = "Differentially expressed gene signature overlap",
+                             content = "The table shows the differentially expressed gene signatures of the loaded experiment and selected experiments.<br>",
+                             placement = "bottom",
+                             trigger = "hover",
+                             options = NULL
+                           ),
+                           DT::dataTableOutput("sharedSigs"),shinyjs::hidden(h3(id = "sigPathwayLoad", "Searching for Enriched Pathways")),DT::dataTableOutput("consensusPathwaySig"))
+                  #tabPanel("Shared GOTerms",DT::dataTableOutput("sharedGOTerms")),
+                  #tabPanel("Shared TFs",DT::dataTableOutput("sharedTFs"))
+                 ))
+              ))
               
               
               
@@ -403,7 +489,8 @@ navbarPage(
         ))
       ))
     )
-  ),
+  )
+ ,
   tabPanel(
     tags$style(type = 'text/css', 'body { overflow-y: scroll; }'),
     title = "Help",
@@ -438,79 +525,103 @@ navbarPage(
       ),
       mainPanel(
         h1("Display tooltips", align = "center", id = "ToolTips"),
-        h4(
+        div(
+          class = "jumbotron",
+        tags$ul(
+        tags$li(h4(
           "Hover over the",
           icon("fas fa-question-circle"),
           "icons to display tool tips in the app",
           align = "left"
-        ),
+        ))))
+        ,
         img(src = "images/tooltips.png", style =
               'border:1px solid #000000'),
         h1("Explore", align = "center", id =
              "Explore"),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The explore section of the app allows browsing of pre-analysed transcriptomics data and comparison between these datasets.\n"
-        ),
+        )))),
         img(src = "images/explore.png"),
-        
+
         h2("Step 1: Search and choose data", align = "left", id =
              "Step1") ,
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The experiment table shows the analysed datasets available to explore.\n"
-        ),
+        )))),
         img(
           src = "images/expTable.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "80%",
+          width = "80%",
           height = "auto"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "To help find an experiment of interest the whole table can be searched or a column can be sorted/searched."
-        ),
+        )))),
         img(
           src = "images/expTableSearched.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "80%",
+          width = "80%",
           height = "auto"
         ),
-        h4("Click on a row in the experiment table to select that experiment"),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(tags$li(h4("Click on a row in the experiment table to select that experiment")),
+                  tags$li(h4(
           "The comparisons in the experiment will be displayed in the comparisons table"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "A comparison to view can be chosen by selecting a row in the comparison table."
-        ),
+        )))),
         img(
           src = "images/comparisonsTable",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "80%",
+          width = "80%",
           height = "auto"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The selected experiment and comparison will be displayed in the left hand information panel."
-        ),
+        )))),
         img(
           src = "images/infoPanel",
           style = 'border:1px solid #000000',
-          max.width = "30%",
-          width = "50%",
-          height = "30%",
+          max.width = "15%",
+          width = "20%",
+          height = "10%",
           align = "centre"
         ),
-        h4("The selected experiment and comparison data will be now be loaded"),
-        
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4("The selected experiment and comparison data will be now be loaded")))),
+
         h2(
           "Step 2: View the experiment metadata, quality control and PCA plots",
           align = "left",
           id = "Step2"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The QC data and the PCA plot after normalisation and batch effect correction can be viewed by clicking the corresponding tabs."
-        ),
-        h4("The QC allows assessment of the data quality"),
+        )),
+        tags$li(h4("The QC allows assessment of the data quality")))),
         img(
           src = "images/qc.png",
           style = 'border:1px solid #000000',
@@ -518,9 +629,12 @@ navbarPage(
           width = "50%",
           height = "auto"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The PCA shows the seperation of the samples by the top two components explaining the variation after any batch effect correction"
-        ),
+        )))),
         img(
           src = "images/pca.png",
           style = 'border:1px solid #000000',
@@ -528,104 +642,121 @@ navbarPage(
           width = "50%",
           height = "auto"
         ),
-        
         h2(
           "Step 3: View the expression response and downstream analysis",
           align = "left",
           id = "Step3"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "Select selected expression response can be explored by examining the fold-change, pathway, gene ontology enrichments, transcription factor predictions and enriched drugs."
-        ),
+        )))),
         h3("Differential Expression", align = "left", id =
              "DiffExp"),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The differential expression table shows the gene names, log2 fold changes and if there are experimental replicates the Benjamini-Hochberg adjusted p-values."
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "Differential expression analysis is performed using DESeq2 for RNA-seq and limma for microarray."
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The table can be searched using the search box, sorted by clicking the columns and filtered using the column filters."
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The copy and csv buttons at the bottom of the table allow export of visible filtered table"
-        ),
+        )))),
         img(
           src = "images/fc.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "60%",
+          width = "60%",
           height = "auto"
         ),
         h3("Characteristic Direction", align = "left", id =
              "charDirect"),
-        h4("The characteristic direction method gives the genes that best seperate the samples in the comparison and has been shown to be more sensitive than limma/DESeq2 in identifying differentially expressed genes. The top 500 genes are shown which can be considered a differential expression signature of the expression response. Please see"),
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4("The characteristic direction method gives the genes that best seperate the samples in the comparison and has been shown to be more sensitive than limma/DESeq2 in identifying differentially expressed genes. The top 500 genes are shown which can be considered a differential expression signature of the expression response. Please see"),
         tags$a(href="http://doi.org/10.1186/1471-2105-15-79","http://doi.org/10.1186/1471-2105-15-79",target="_blank"),
-        h4("for details of the method"),
-        h4(
+        h4("for details of the method")),
+        tags$li(h4(
           "The table can be searched using the search box, sorted by clicking the columns and filtered using the column filters."
-        ),
+        )))),
         img(
           src = "images/chrDir.png",
           style = 'border:1px solid #000000',
-          max.width = "50%",
-          width = "50%",
+          max.width = "60%",
+          width = "60%",
           height = "auto"
         ),
         h3("Differential Pathways", align = "left", id =
              "DiffPath"),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The pathway table shows the differentially regulated pathways, the differentially expressed in those pathways, the adjusted p-value and the percentage pathway coverage"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The pathway enrichment is performed differentially expressed genes with a threshold of 1.5 fold change and an adjusted pvalue ≤0.05 (if applicable)"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The table can be searched using the search box, sorted by clicking the columns and filtered using the column filters."
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The copy and csv buttons at the bottom of the table allow export of visible filtered table"
-        ),
+        )))),
         img(
           src = "images/pathways.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "80%",
+          width = "80%",
           height = "auto"
         ),
         h3("Enriched GO Terms", align = "left", id =
              "DiffGO"),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The GO Term enrichment table shows the differentially enriched Gene Ontology Biological Process terms, the adjusted p-value and the percentage of differentially expressed genes out of all genes annotated to that GO Term"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "Click on the left hand + symbol to view the differentially expressed genes annotated to that GO Term"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The GO enrichment is performed differentially expressed genes with a threshold of 1.5 fold change and an adjusted pvalue ≤0.05 (if applicable)"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The table can be searched using the search box, sorted by clicking the columns and filtered using the column filters."
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The copy and csv buttons at the bottom of the table allow export of visible filtered table"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The Reduced GO Term enrichment table similarly shows GO Enrichment results after redundancy reduction based on the semantic similarity of the GO Terms"
-        ),
+        )))),
         img(
           src = "images/go.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "80%",
+          width = "80%",
           height = "auto"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The GO MDS plots shows an overview of the reduced GO Terms, seperated based on their semantic simiarity so similar terms are grouped together"
-        ),
-        h4("Hover over a point to show the name of the GO term"),
-        h4("The points are coloured by adjusted p-value"),
+        )),
+        tags$li(h4("Hover over a point to show the name of the GO term")),
+        tags$li(h4("The points are coloured by adjusted p-value")))),
         img(
           src = "images/gomds.png",
           style = 'border:1px solid #000000',
@@ -638,75 +769,87 @@ navbarPage(
           align = "left",
           id = "DiffTF"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The transcription factor (TF) enrichment table shows the transcription factor motifs predicted to significantly regulate the differentially expressed genes using RcisTarget"
-        ),
-        h4("The NES gives the significance of the enrichment for each motif"),
-        h4(
+        )),
+        tags$li(h4("The NES gives the significance of the enrichment for each motif")),
+        tags$li(h4(
           "The known TF corresponding to motifs are given in the TF_direct column"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "Inferred TF annotations through motif simialrity are given in the TF_indirect column"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "Click on the left hand + symbol to view the differentially expressed genes predicted to be regulated by that TF"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The TF enrichment is performed using differentially expressed genes with a threshold of 1.5 fold change and an adjusted pvalue ≤0.05 (if applicable)"
-        ),
+        )))),
         img(
           src = "images/TF.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "80%",
+          width = "80%",
           height = "auto"
         ),
         h3("Enriched Drugs", align = "left", id =
              "DiffDrug"),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The drug enrichment table shows the drugs with overlapping transcriptomic signatures from the L1000CDS2 tool"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The drug enrichment is performed using differentially expressed genes with a threshold of 1.5 fold change and an adjusted pvalue ≤0.05 (if applicable)"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The search score is the overlap between the input and drug signature differentially expressed genes divided by the total number of genes"
-        ),
-        
-        h4(
+        )),
+
+        tags$li(h4(
           "Drugs can either mimic the transcriptional response or have the opposite response (reverse)"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "Click on the left hand + symbol to view the overlapping differentially expressed genes and the predicted drug targets"
-        ),
+        )))),
         img(
           src = "images/drug.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "80%",
+          width = "80%",
           height = "auto"
         ),
         h3("Active Subnetworks", align = "left", id =
              "Subnet"),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The subnetwork table shows a summary of the significant subnetworks (de novo pathways) identified using the GIGA algorithm"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "This algorithm uses all the differential expression data without a threshold"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "The signifcance of the pathway and the top enriched GO term are shown"
-        ),
+        )))),
         img(
           src = "images/subnetwork.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "80%",
+          width = "80%",
           height = "auto"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "Click on a row to load that subnetwork, the information will be shown and it can now be viewed in the subnetwork tab"
-        ),
+        )))),
         img(
           src = "images/subnetworkinfo.png",
           style = 'border:1px solid #000000',
@@ -714,10 +857,13 @@ navbarPage(
           width = "30%",
           height = "auto"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The subnetwork can be zoomed, moved around the canvas and each node moved to improve the layout"
-        ),
-        h4("Hover over a node to view the fold change of that node"),
+        )),
+        tags$li(h4("Hover over a node to view the fold change of that node")))),
         img(
           src = "images/subnetworkvis.png",
           style = 'border:1px solid #000000',
@@ -727,97 +873,131 @@ navbarPage(
         ),
         h3("Shared Response", align = "left", id =
              "Shared"),
-        h4(
-          "The shared response summary allows comparison of the selected dataset against the other datasets in the database"
-        ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
+          "The shared response summary tabs allow comparison of the selected dataset against the other datasets in the database"
+        )),
+        tags$li(h4(
+          "The pairwise comparison tab allows detailed comparison of the selected dataset against a single datasets in the database while the multi comparison allows calculation of consensus signatures and enriched pathways from many datasets"
+        )),
+
+        tags$li(h4(
           "The cosine similarity is a measure of correlation of the fold-changes"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "Signed jaccard coefficient is the overlap of up and down differentially expressed genes in the query and comparison datasets"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "Differentially expressed genes are defined using either just a fold-change threshold (1.5 fold) or using both fold-change (1.5 fold) and statistical significance (FDR ≤ 0.05"
-        ),
-        h4(
+        )),
+        tags$li(h4(
           "Select a row to choose a comparison dataset for further detail in the comparison tab"
-        ),
+        )))),
         img(
           src = "images/sharedResponse.png",
           style = 'border:1px solid #000000',
-          max.width = "50%",
-          width = "50%",
+          max.width = "60%",
+          width = "60%",
           height = "auto"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "This will show the up and down differentially expressed genes in the query dataset that overlap the selected comparison"
-        ),
+        )))),
         img(
           src = "images/sharedGenes.png",
+          style = 'border:1px solid #000000',
+          max.width = "90%",
+          width = "90%",
+          height = "auto"
+        ),
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
+          "The cosine and jaccard plots show the distribution of scores over the database"
+        )),
+        tags$li(h4(
+          "Select one or more rows to choose comparison datasets for further detail in the comparison tabs"
+        )),
+        tags$li(h4(
+          "For the fold change signatures the rank product method is used to calculate the consensus probability of the differential expression. For the Characteristic Direction and Differential expression signatures the genes are shwon with their direction of change in each experiment. A p-value or vote threshold can be selected to perform EnrichR pathway enrichment analysis from the consensus signatures."
+        )))),
+
+        h1("Compare", align = "center", id =
+             "Compare"),
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
+          "The compare section of the app allows searching of the database by a gene or by a transcriptomics signature"
+        )))),
+        img(src = "images/compare.png", max.width = "10%",
+            width = "10%",
+            height = "auto"),
+        h2("Compare by Gene", align = "left", id =
+             "CompareGene"),
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
+          "To search all the fold change tables enter a gene symbol and select the appropriate species"
+        )))),
+        img(
+          src = "images/searchGene.png",
           style = 'border:1px solid #000000',
           max.width = "40%",
           width = "40%",
           height = "auto"
         ),
-        h4(
-          "The cosine and jaccard plots show the distribution of scores over the database"
-        ),
-        
-        h1("Compare", align = "center", id =
-             "Compare"),
-        h4(
-          "The compare section of the app allows searching of the database by a gene or by a transcriptomics signature"
-        ),
-        img(src = "images/compare.png"),
-        h2("Compare by Gene", align = "left", id =
-             "CompareGene"),
-        h4(
-          "To search all the fold change tables enter a gene symbol and select the appropriate species"
-        ),
-        img(
-          src = "images/searchGene.png",
-          style = 'border:1px solid #000000',
-          max.width = "25",
-          width = "25%",
-          height = "auto"
-        ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The fold change of that gene in every comparison in all the experiments will be shown"
-        ),
-        h4("Datasets of interest can then be fully explored in the Explore tab"),
+        )),
+        tags$li(h4("Datasets of interest can then be fully explored in the Explore tab")))),
         img(
           src = "images/compareGene.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "50%",
+          width = "50%",
           height = "auto"
         ),
         h2("Compare by signature", align = "left", id =
              "CompareSig"),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "To search all the fold change tables enter the differentially expressed up and down regulated genes and select the appropriate species"
-        ),
+        )))),
         img(
           src = "images/inputSig.png",
           style = 'border:1px solid #000000',
-          max.width = "30%",
-          width = "30%",
+          max.width = "50%",
+          width = "50%",
           height = "auto"
         ),
-        h4(
+        div(
+          class = "jumbotron",
+          tags$ul(
+        tags$li(h4(
           "The similarity to every other comparison in all the experiments will be shown using the signed jaccard measure for significant differentially expressed genes and characterstic direction signatures"
-        ),
-        h4("Select a row to see the gene overlap for that comparison"),
+        )),
+        tags$li(h4("Select a row to see the gene overlap for that comparison")))),
         img(
           src = "images/sigTable.png",
           style = 'border:1px solid #000000',
-          max.width = "100%",
-          width = "100%",
+          max.width = "60%",
+          width = "60%",
           height = "auto"
         )
-      )
-    )
-  )
-  
-  
+       )
+     )
+   )
 )
